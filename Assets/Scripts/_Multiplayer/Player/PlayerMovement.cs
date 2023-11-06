@@ -37,15 +37,19 @@ namespace HS4
         [Header("Refs")]
         [SerializeField] private CharacterController _controller;
         [SerializeField] private PlayerAnimation _animation;
+        [SerializeField] private PlayerView _playerView;
 
         [Header("Stats")]
+        [SerializeField] private GameObject _footstepOb;
         [SerializeField] private float _speed = 1f;
         [SerializeField] private float _rotationSpeed = 180f;
         public float SpeedChangeRate = 10.0f;
         public float RotationSmoothTime = 12f;
         private float _targetRotation = 0.0f;
         private float _verticalVelocity = -9.18f;
-
+        private bool _footStep = false;
+        [SerializeField] private GameObject test;
+        [SerializeField] private GameObject Test2;
         //Netcode
         NetworkTimer _timer;
         const float k_serverTickRate = 60f;
@@ -63,9 +67,7 @@ namespace HS4
         Queue<InputPayload> _serverInputQueue;
 
 
-         [SerializeField] private NetworkVariable<bool> _isCanMove = new NetworkVariable<bool>(true,
-                                                                    NetworkVariableReadPermission.Everyone,
-                                                                    NetworkVariableWritePermission.Server);
+         [SerializeField] private NetworkVariable<bool> _isCanMove = new NetworkVariable<bool>(true);
       
         // Start is called before the first frame update
         void Awake()
@@ -76,6 +78,8 @@ namespace HS4
 
             _serverStateBuffer = new CircularBuffer<StatePayload>(k_bufferSize);
             _serverInputQueue = new Queue<InputPayload>();
+
+             Test2 =Instantiate(test);
         }
 
         public void SetCanMove(bool isKill) => _isCanMove.Value = !isKill;
@@ -83,6 +87,9 @@ namespace HS4
         void Update()
         {
             _timer.Update(Time.deltaTime);
+         
+            Test2.transform.position = this.transform.position;
+            
         }
         private void FixedUpdate()
         {
@@ -98,6 +105,7 @@ namespace HS4
 
         private void HandleClientTick()
         {
+
             if (IsOwner)
             {
                 var currentTick = _timer.CurrentTick;
@@ -110,7 +118,7 @@ namespace HS4
                 };
 
                 _clientInputBuffer.Add(inputPayload, bufferIndex);
-                SendToServerRpc(inputPayload);
+               SendToServerRpc(inputPayload);
 
                 if (!IsHost)
                 {
@@ -119,9 +127,15 @@ namespace HS4
                 }
 
             }
-            else
+            else if(IsClient && !IsServer)
             {
-                ProcessMove(_lastInputPayload);
+               
+               ProcessMove(_lastInputPayload);
+                // if(_lastInputPayload.Move != Vector2.zero) {
+                //     _animation.Walk();
+                // } else {
+                //     _animation.Idle();
+                // }
             }
 
         }
@@ -176,6 +190,7 @@ namespace HS4
 
         private void Move(InputPayload inputPayload)
         {
+            
             Vector3 inputDirection = new Vector3(inputPayload.Move.x, 0.0f, inputPayload.Move.y).normalized;
 
             if (inputPayload.Move != Vector2.zero)
@@ -186,14 +201,36 @@ namespace HS4
                 transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0.0f, _targetRotation, 0.0f), RotationSmoothTime * Time.deltaTime);
 
                 Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
-
+               
                 _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
-                                new Vector3(0.0f, 0, 0.0f) * Time.deltaTime);
+                            new Vector3(0.0f, 0, 0.0f) * Time.deltaTime);
+                
+                
+               
                 _animation.Walk();
-            }
-            else
-                _animation.Idle();
 
+                if(_footStep == false && _playerView.ObjectHide.Value)
+                {
+                    StartCoroutine(InitFootstep());
+                }
+            }
+            else {
+                _animation.Idle();
+                _footStep = false;
+            }
+                
+
+        }
+
+
+        IEnumerator InitFootstep() {
+            _footStep = true;
+            GameObject footstep = Instantiate(_footstepOb, this.transform.position,Quaternion.identity);
+            footstep.transform.position = new Vector3(transform.position.x, 0.5902482f, transform.position.z);
+            footstep.transform.eulerAngles = new Vector3(90f,transform.eulerAngles.y,0);
+            yield return new WaitForSeconds(3f);
+            Destroy(footstep);
+            _footStep = false;
         }
 
 

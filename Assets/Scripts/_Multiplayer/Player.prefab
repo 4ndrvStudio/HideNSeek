@@ -2913,7 +2913,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _meshFilter: {fileID: 1589873250932571552}
   _meshRenderer: {fileID: 1532084352285398639}
-  _radius: 1.5
+  _radius: 0.55
   _segments: 30
 --- !u!33 &1589873250932571552
 MeshFilter:
@@ -5052,7 +5052,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7204624246409445784}
-  - component: {fileID: 5091618564194990114}
   - component: {fileID: 9056863329429940122}
   - component: {fileID: 3952886916563862775}
   - component: {fileID: 8873340823497478372}
@@ -5094,27 +5093,6 @@ Transform:
   - {fileID: 1329726669034862758}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 20.67, z: 0}
---- !u!95 &5091618564194990114
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7698879056236510681}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: ecc11f28baac2b54697a78c7db592562, type: 2}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!143 &9056863329429940122
 CharacterController:
   m_ObjectHideFlags: 0
@@ -5176,11 +5154,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db9d6857236183f41a57807970480e5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerView: {fileID: 618698326890096672}
+  PlayerView: {fileID: 618698326890096672}
   _playerMovement: {fileID: 2140308536106417594}
-  _isHider:
+  IsHider:
     m_InternalValue: 0
-  _isKill:
+  IsKill:
     m_InternalValue: 0
 --- !u!114 &618698326890096672
 MonoBehaviour:
@@ -5195,12 +5173,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playerAnimation: {fileID: 1577653970455949019}
+  _skinMeshRender: {fileID: 0}
   _hiderBody: {fileID: 5616374764941628547}
   _seekerBody: {fileID: 1265794150682885379}
   _caseOb: {fileID: 7309771228991887445}
   _radarView: {fileID: 3002296245083714022}
   _circleRadarView: {fileID: 7017852648188408954}
   _isHider: 0
+  ObjectHide:
+    m_InternalValue: 0
 --- !u!114 &2140308536106417594
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5215,10 +5196,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _controller: {fileID: 9056863329429940122}
   _animation: {fileID: 1577653970455949019}
+  _playerView: {fileID: 618698326890096672}
+  _footstepOb: {fileID: 6183994594870387649, guid: 52cd866cbefb14a449f3e6e2d50bd95d, type: 3}
   _speed: 3
   _rotationSpeed: 180
   SpeedChangeRate: 10
   RotationSmoothTime: 12
+  test: {fileID: 4100753728354483749, guid: 2308cda06edd59348b379a5b9718aff1, type: 3}
+  Test2: {fileID: 0}
   _isCanMove:
     m_InternalValue: 1
 --- !u!114 &1577653970455949019
@@ -5233,7 +5218,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 160ee1d48331e054db76d424d23deb10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _animator: {fileID: 7407851356599894064}
+  _animator: {fileID: 0}
 --- !u!114 &8728038018966927418
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6481,7 +6466,7 @@ Animator:
   m_GameObject: {fileID: 8920522290838505961}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: e7e11abc4f6f447f49438036561b8a44, type: 3}
-  m_Controller: {fileID: 9100000, guid: a8d673736f5bce14cbb1d1f2b3a3e8af, type: 2}
+  m_Controller: {fileID: 9100000, guid: 69f099e37dd6c42a2a65bc85a612c3be, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

@@ -8,15 +8,12 @@ namespace HS4
 {
     public class Player : NetworkBehaviour
     {
-        [SerializeField] private PlayerView _playerView;
+        [Header("Refs")]
+        public PlayerView PlayerView;
         [SerializeField] private PlayerMovement _playerMovement;
         //stats
-        [SerializeField] private NetworkVariable<bool> _isHider = new NetworkVariable<bool>(default,
-                                                                    NetworkVariableReadPermission.Everyone,
-                                                                    NetworkVariableWritePermission.Server);
-        [SerializeField] private NetworkVariable<bool> _isKill = new NetworkVariable<bool>(default,
-                                                                    NetworkVariableReadPermission.Everyone,
-                                                                    NetworkVariableWritePermission.Server);
+        public  NetworkVariable<bool> IsHider = new NetworkVariable<bool>(false);
+       public NetworkVariable<bool> IsKill = new NetworkVariable<bool>(false);
 
         public override void OnNetworkSpawn()
         {
@@ -26,8 +23,8 @@ namespace HS4
             //    _playerCamera.Priority = 0;
             //    return;
             //}      
-            _isHider.OnValueChanged += OnHiderStateChange;
-            _isKill.OnValueChanged += OnIsKillStateChange;
+            IsHider.OnValueChanged += OnHiderStateChange;
+            IsKill.OnValueChanged += OnIsKillStateChange;
 
             SetupCharacterType();
 
@@ -35,30 +32,39 @@ namespace HS4
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
-            _isHider.OnValueChanged -= OnHiderStateChange;
-            _isKill.OnValueChanged -= OnIsKillStateChange;
+            IsHider.OnValueChanged -= OnHiderStateChange;
+            IsKill.OnValueChanged -= OnIsKillStateChange;
         }
 
-        public void SetIsHider() => _isHider.Value = true;
+        [ClientRpc]
+        public void SetStartHideAndSeekClientRpc() {
+            if(IsOwner) {
+                GameController.Instance.HideEnemy(IsHider.Value);
+            }
+        }
 
-        public void SetIsKill()  => _isKill.Value = true;
+        public void SetIsHider() => IsHider.Value = true;
+
+        public void SetIsKill()  => IsKill.Value = true;
 
         private void OnHiderStateChange(bool previous, bool current)
         {
             SetupCharacterType();
         }
-        private void SetupCharacterType() {
-            _playerView.SetCharacterType(_isHider.Value);
-           if(_isHider.Value)  
+        private void SetupCharacterType() 
+        {
+           PlayerView.SetCharacterType(IsHider.Value);
+         
+           if(IsHider.Value)  
                 gameObject.layer =  LayerMask.NameToLayer("Victim");
         }
 
         private void OnIsKillStateChange(bool previous, bool current)
         {
-             _playerView.SetIsKill(_isKill.Value);
-            _playerMovement.SetCanMove(_isKill.Value);
-             
+            PlayerView.SetIsKill(IsKill.Value);
+            _playerMovement.SetCanMove(IsKill.Value);
         }
+
 
    
 

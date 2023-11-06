@@ -20,6 +20,7 @@ namespace HS4
         [SerializeField] private CircleRadarView _circleRadarView;
 
         [SerializeField] private bool _isHider;
+        public NetworkVariable<bool> ObjectHide = new NetworkVariable<bool>(false);
 
         public void SetCharacterType(bool isHider)
         {
@@ -36,10 +37,18 @@ namespace HS4
             _playerAnimation.SetAnimator(targetBody.GetComponent<Animator>());
         }
 
+        public void Hide() {
+            _skinMeshRender.enabled = false;
+            ObjectHide.Value = true;
+        } 
+
         public void SetIsKill(bool isKill) {
             _caseOb.SetActive(isKill);
-            if(isKill)
-              _playerAnimation.IsDied();
+            if(isKill) {
+                _skinMeshRender.enabled = true;
+                _playerAnimation.IsDied();
+            }
+             
         }
 
         private void SetRadar(bool isHider) {

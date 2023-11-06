@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode.Components;
 using UnityEngine;
 
 namespace HS4
@@ -25,7 +26,9 @@ namespace HS4
             }
         }
 
-      public void SetAnimator(Animator animator)  => _animator = animator;
+      public void SetAnimator(Animator animator) {
+         _animator = animator;
+      }  
 
         public bool IsDied()
         {
