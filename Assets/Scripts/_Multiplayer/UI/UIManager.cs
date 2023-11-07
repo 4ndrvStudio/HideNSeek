@@ -30,13 +30,13 @@ namespace HS4.UI
             if (selectedPopup != null) selectedPopup.Hide();
         }
 
-        public void ToggleView(ViewName viewName)
+        public void ToggleView(ViewName viewName, Dictionary<string, object> customProperties = null)
         {
             UIView selectedPanel = _listView.Find(tab => tab.ViewName == viewName);
             if (selectedPanel != null)
             {
                 _listView.ForEach(view => view.Hide());
-                selectedPanel.Show();
+                selectedPanel.Show(customProperties);
             }
         }
     }

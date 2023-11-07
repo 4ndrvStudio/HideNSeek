@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 namespace HS4
 {
+    using PlayerCore;
     public class PlayerInRoom
     {
         public Player Player;

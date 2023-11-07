@@ -4,7 +4,7 @@ using Unity.Netcode;
 using UnityEngine;
 using Utils;
 
-namespace HS4
+namespace HS4.PlayerCore
 {
     public class Player : NetworkBehaviour
     {

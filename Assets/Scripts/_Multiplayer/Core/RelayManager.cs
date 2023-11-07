@@ -37,34 +37,19 @@ public class RelayManager : MonoBehaviour
 {
     public static RelayManager Instance;
 
-    [SerializeField]
-    private string environment = "production";
-
-    [SerializeField]
-    private int maxNumberOfConnections = 10;
 
     public bool IsRelayEnabled => Transport != null && Transport.Protocol == UnityTransport.ProtocolType.RelayUnityTransport;
 
     public UnityTransport Transport => NetworkManager.Singleton.gameObject.GetComponent<UnityTransport>();
 
-    private void Awake() {
-        if(Instance ==null)
-            Instance = this;
+    public void Awake() {
+            if(Instance ==null)
+                Instance = this;
     }
 
-    public async Task<RelayHostData> SetupRelay()
+
+    public async Task<RelayHostData> SetupHost(int maxNumberOfConnections)
     {
-       // Logger.Instance.LogInfo($"Relay Server Starting With Max Connections: {maxNumberOfConnections}");
-
-        InitializationOptions options = new InitializationOptions()
-            .SetEnvironmentName(environment);
-
-        await UnityServices.InitializeAsync(options);
-
-        if (!AuthenticationService.Instance.IsSignedIn)
-        {
-            await AuthenticationService.Instance.SignInAnonymouslyAsync();
-        }
 
         Allocation allocation = await Relay.Instance.CreateAllocationAsync(maxNumberOfConnections);
 
@@ -90,18 +75,6 @@ public class RelayManager : MonoBehaviour
 
     public async Task<RelayJoinData> JoinRelay(string joinCode)
     {
-        //Logger.Instance.LogInfo($"Client Joining Game With Join Code: {joinCode}");
-
-        InitializationOptions options = new InitializationOptions()
-            .SetEnvironmentName(environment);
-
-        await UnityServices.InitializeAsync(options);
-
-        if (!AuthenticationService.Instance.IsSignedIn)
-        {
-            await AuthenticationService.Instance.SignInAnonymouslyAsync();
-        }
-
         JoinAllocation allocation = await Relay.Instance.JoinAllocationAsync(joinCode);
 
         RelayJoinData relayJoinData = new RelayJoinData
@@ -118,8 +91,6 @@ public class RelayManager : MonoBehaviour
 
         Transport.SetRelayServerData(relayJoinData.IPv4Address, relayJoinData.Port, relayJoinData.AllocationIDBytes,
             relayJoinData.Key, relayJoinData.ConnectionData, relayJoinData.HostConnectionData);
-
-       // Logger.Instance.LogInfo($"Client Joined Game With Join Code: {joinCode}");
 
         return relayJoinData;
     }

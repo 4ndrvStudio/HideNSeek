@@ -4,7 +4,7 @@ using Game;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace HS4
+namespace HS4.PlayerCore
 {
     public class PlayerView : NetworkBehaviour
     {

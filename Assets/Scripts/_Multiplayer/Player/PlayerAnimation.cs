@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode.Components;
 using UnityEngine;
 
-namespace HS4
+namespace HS4.PlayerCore
 {
     public enum AnimationType
     {
