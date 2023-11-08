@@ -53,7 +53,7 @@ namespace HS4.UI
                 ToggleLoading(true);
                 LobbyPlayerData playerData = new LobbyPlayerData()
                 {
-                    IsReady = false,
+                    IsHost = true,
                     DisplayName = "custom",
                     CharacterType = 1
                 };
@@ -73,7 +73,7 @@ namespace HS4.UI
         {
             base.Show(customProperties);
             ToggleContent(LobbyContent.Join);
-
+            FecthLobbiesData();
         }
 
         private void ToggleContent(LobbyContent lobbyContent)
@@ -109,7 +109,6 @@ namespace HS4.UI
             _loadingIconOb.SetActive(true);
             _lobbyList.ForEach(item => Destroy(item));
             _lobbyList.Clear();
-
             var lobbiesResult = await LobbyManager.Instance.RetrieveLobbyList();
             if (lobbiesResult.IsSuccess)
             {
@@ -117,7 +116,7 @@ namespace HS4.UI
                 lobbiesRespone.Results.ForEach(lobby =>
                 {
                     GameObject lobbyPanel = Instantiate(_lobbyPanelOb, _lobbyPanelHolder.transform);
-                    UILobbyItem lobbyItemScript = lobbyPanel.GetComponent<UILobbyItem>();
+                    UILobbiesPanel lobbyItemScript = lobbyPanel.GetComponent<UILobbiesPanel>();
                     lobbyItemScript.Setup(lobby);
                     _lobbyList.Add(lobbyPanel);
                 });

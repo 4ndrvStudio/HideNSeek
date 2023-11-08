@@ -13,7 +13,7 @@ namespace HS4.PlayerCore
         [SerializeField] private PlayerMovement _playerMovement;
         //stats
         public  NetworkVariable<bool> IsHider = new NetworkVariable<bool>(false);
-       public NetworkVariable<bool> IsKill = new NetworkVariable<bool>(false);
+        public NetworkVariable<bool> IsKill = new NetworkVariable<bool>(false);
 
         public override void OnNetworkSpawn()
         {
@@ -44,7 +44,7 @@ namespace HS4.PlayerCore
         }
 
         public void SetIsHider() => IsHider.Value = true;
-
+        
         public void SetIsKill()  => IsKill.Value = true;
 
         private void OnHiderStateChange(bool previous, bool current)

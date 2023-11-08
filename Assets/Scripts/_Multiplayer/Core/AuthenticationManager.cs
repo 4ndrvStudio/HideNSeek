@@ -20,6 +20,7 @@ namespace HS4
             {
                 await AuthenticationService.Instance.SignInAnonymouslyAsync();
             }
+            Debug.Log("Sign Success");
         }
 
     

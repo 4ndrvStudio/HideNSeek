@@ -33,7 +33,7 @@ namespace HS4
 
         [SerializeField] private TextMeshProUGUI _timeText;
         [SerializeField] private Button _startFindingBtn;
-        
+
         public NetworkVariable<float> Time = new NetworkVariable<float>();
 
         private NetworkVariable<bool> m_CountdownStarted = new NetworkVariable<bool>(false);
@@ -46,25 +46,28 @@ namespace HS4
                 Instance = this;
         }
 
-        private void Update() {
+        private void Update()
+        {
             _timeText.text = time.ToString();
         }
 
-    
+
 
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-       
+
             NetworkManager.OnClientConnectedCallback += OnClientConnectedCallback;
-            
-            if(IsServer)
-            _startFindingBtn.onClick.AddListener(() => {
-                StartHideAndSeek();
-            });
+
+            if (IsServer)
+                _startFindingBtn.onClick.AddListener(() =>
+                {
+                    RandomChoosePlayer();
+                });
         }
 
-        public  override void OnNetworkDespawn() {
+        public override void OnNetworkDespawn()
+        {
             base.OnNetworkDespawn();
             NetworkManager.OnClientConnectedCallback += OnClientConnectedCallback;
 
@@ -74,47 +77,61 @@ namespace HS4
         {
             if (NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.TryGetComponent(out Player player))
             {
-                Count++;
-
-                if (Count > 1)
-                {
-                    if (IsServer)
-                        player.SetIsHider();
-
-                    _playerList.Add(clientId, new PlayerInRoom(player, true));
-
-                }
-                else
-                    _playerList.Add(clientId, new PlayerInRoom(player, false));
+                // Count++;
+                _playerList.Add(clientId, new PlayerInRoom(player, true));
             }
         }
 
         public void StartHideAndSeek()
         {
-                foreach (var player in _playerList.Values)
-                {
-                    player.Player.SetStartHideAndSeekClientRpc();
-                } 
-            
+
+            foreach (var player in _playerList.Values)
+            {
+                player.Player.SetStartHideAndSeekClientRpc();
+            }
+
         }
 
         public void HideEnemy(bool _isHider)
         {
-            Debug.Log(_isHider);
             if (!_isHider)
             {
                 Debug.Log(_playerList.Count);
 
                 foreach (var player in _playerList.Values)
                 {
-                    if(player.Player.IsHider.Value)
-                         player.Player.PlayerView.Hide();
-                    
+                    if (player.Player.IsHider.Value)
+                        player.Player.PlayerView.Hide();
+
                 }
             }
         }
 
-        [ServerRpc]
+        private void RandomChoosePlayer()
+        {
+            List<KeyValuePair<ulong, PlayerInRoom>> playerList = new List<KeyValuePair<ulong, PlayerInRoom>>(_playerList);
+
+            System.Random random = new System.Random();
+            playerList.Sort((x, y) => random.Next(-1, 2));
+            
+            playerList[1].Value.IsHider = false;
+            if(playerList.Count > 3)
+                playerList[2].Value.IsHider = false;
+
+            _playerList = new Dictionary<ulong, PlayerInRoom>();
+          
+            foreach (var kvp in playerList)
+            {
+                _playerList.Add(kvp.Key, kvp.Value);
+                
+                if(kvp.Value.IsHider) {
+                    if(IsServer)
+                    kvp.Value.Player.SetIsHider();
+                }
+            }
+        }
+
+        [ServerRpc(RequireOwnership = false)]
         public void KillPlayerServerRpc(ulong clientId)
         {
             _playerList[clientId].Player.SetIsKill();

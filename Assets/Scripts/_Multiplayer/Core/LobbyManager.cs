@@ -5,6 +5,8 @@ using Unity.Services.Lobbies;
 using System.Threading.Tasks;
 using Unity.Services.Authentication;
 using Unity.Services.Lobbies.Models;
+using Unity.Netcode;
+using UnityEngine.SceneManagement;
 
 namespace HS4
 {
@@ -15,6 +17,7 @@ namespace HS4
     }
 
     public class LobbyPlayerData {
+        public bool IsHost;
         public bool IsReady;
         public string DisplayName;
         public int CharacterType;
@@ -36,18 +39,23 @@ namespace HS4
             return new Dictionary<string, PlayerDataObject>()
                 {
                     {
+                        "IsHost", new PlayerDataObject(
+                            visibility: PlayerDataObject.VisibilityOptions.Member, 
+                            value: user.IsHost.ToString())
+                    },
+                    {
                         "IsReady", new PlayerDataObject(
-                            visibility: PlayerDataObject.VisibilityOptions.Member, // Visible only to members of the lobby.
+                            visibility: PlayerDataObject.VisibilityOptions.Member, 
                             value: user.IsReady.ToString())
                     },
                     {
                         "DisplayName", new PlayerDataObject(
-                            visibility: PlayerDataObject.VisibilityOptions.Member, // Visible only to members of the lobby.
+                            visibility: PlayerDataObject.VisibilityOptions.Member,
                             value: user.DisplayName)
                     },
                     {
                         "CharacterType", new PlayerDataObject(
-                            visibility: PlayerDataObject.VisibilityOptions.Member, // Visible only to members of the lobby.
+                            visibility: PlayerDataObject.VisibilityOptions.Member,
                             value: user.CharacterType.ToString())
                     }
                 };
@@ -72,6 +80,7 @@ namespace HS4
             );
 
             CurrentLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, createLobbyOptions);
+            SceneManager.LoadSceneAsync("scene_gameplay",LoadSceneMode.Additive);
 
             StartCoroutine(HeartbeatLobbyCoroutine(CurrentLobby.Id, 15));
 
@@ -104,6 +113,11 @@ namespace HS4
                 );
              
                 CurrentLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId,options);
+                StartCoroutine(HeartbeatLobbyCoroutine(CurrentLobby.Id, 15));
+               
+                string joinCodeKey = CurrentLobby.Data["JoinCodeKey"].Value;
+                await RelayManager.Instance.JoinRelay(joinCodeKey);
+                SceneManager.LoadSceneAsync("scene_gameplay",LoadSceneMode.Additive);
 
                 return new LobbyResult {
                     IsSuccess = true,
@@ -113,7 +127,6 @@ namespace HS4
             }
             catch (LobbyServiceException e)
             {
-                Debug.Log(e.Message);
                 return new LobbyResult {
                     IsSuccess = false,
                     Message = e.Message
@@ -148,7 +161,7 @@ namespace HS4
                 QueryResponse lobbies = await Lobbies.Instance.QueryLobbiesAsync(options);
                
                 return new LobbyResult {
-                    IsSuccess = false,
+                    IsSuccess = true,
                     Data = lobbies
                 };
                 //...
@@ -171,6 +184,12 @@ namespace HS4
                 Lobbies.Instance.SendHeartbeatPingAsync(lobbyId);
                 yield return delay;
             }
+        }
+
+        public void LeaveLobby() {
+            NetworkManager.Singleton.Shutdown();
+            SceneManager.UnloadSceneAsync("scene_gameplay");
+            StopAllCoroutines();
         }
 
     }

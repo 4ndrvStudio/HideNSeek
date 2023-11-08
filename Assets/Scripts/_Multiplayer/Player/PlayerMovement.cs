@@ -129,13 +129,7 @@ namespace HS4.PlayerCore
             }
             else if(IsClient && !IsServer)
             {
-               
                ProcessMove(_lastInputPayload);
-                // if(_lastInputPayload.Move != Vector2.zero) {
-                //     _animation.Walk();
-                // } else {
-                //     _animation.Idle();
-                // }
             }
 
         }
@@ -226,6 +220,7 @@ namespace HS4.PlayerCore
         IEnumerator InitFootstep() {
             _footStep = true;
             GameObject footstep = Instantiate(_footstepOb, this.transform.position,Quaternion.identity);
+            footstep.GetComponent<ParticleSystem>().Play();
             footstep.transform.position = new Vector3(transform.position.x, 0.5902482f, transform.position.z);
             footstep.transform.eulerAngles = new Vector3(90f,transform.eulerAngles.y,0);
             yield return new WaitForSeconds(3f);

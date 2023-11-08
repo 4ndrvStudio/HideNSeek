@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace HS4.UI
 {
-    public class UILobbyItem : MonoBehaviour
+    public class UILobbiesPanel : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI _lobbyNameText;
         [SerializeField] private TextMeshProUGUI _playerCountText;
@@ -22,7 +22,6 @@ namespace HS4.UI
                 LobbyPlayerData lobbyPlayerData = new LobbyPlayerData() 
                 {
                     DisplayName = "Join",
-                    IsReady = false,
                     CharacterType = 1
                 };
                 var joinResult = await LobbyManager.Instance.JoinLobby(_lobby.Id,lobbyPlayerData);

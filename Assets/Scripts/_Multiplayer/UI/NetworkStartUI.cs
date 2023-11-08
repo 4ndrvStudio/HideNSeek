@@ -16,14 +16,21 @@ namespace HS4
             _startClientButton.onClick.AddListener(StartClient);
         }
 
-        void StartClient() {
-
+        async void StartClient() {
+            if(RelayManager.Instance.IsRelayEnabled) {
+                await RelayManager.Instance.JoinRelay(_joinCodeInput.text);
+            }
+            
             NetworkManager.Singleton.StartClient();
             
             Hide();
         }
 
-         void StartHost() {
+         async void StartHost() 
+         {
+            if(RelayManager.Instance.IsRelayEnabled) {
+                await RelayManager.Instance.SetupHost(6);
+            }
             
             NetworkManager.Singleton.StartHost();
             Hide();

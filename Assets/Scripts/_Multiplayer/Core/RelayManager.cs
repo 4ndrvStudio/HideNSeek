@@ -68,15 +68,17 @@ public class RelayManager : MonoBehaviour
         Transport.SetRelayServerData(relayHostData.IPv4Address, relayHostData.Port, relayHostData.AllocationIDBytes,
                 relayHostData.Key, relayHostData.ConnectionData);
 
-       Debug.Log($"Relay Server Generated Join Code: {relayHostData.JoinCode}");
+        Debug.Log($"Relay Server Generated Join Code: {relayHostData.JoinCode}");
+        NetworkManager.Singleton.StartHost();
 
         return relayHostData;
     }
 
     public async Task<RelayJoinData> JoinRelay(string joinCode)
     {
+  
         JoinAllocation allocation = await Relay.Instance.JoinAllocationAsync(joinCode);
-
+      
         RelayJoinData relayJoinData = new RelayJoinData
         {
             Key = allocation.Key,
@@ -91,6 +93,7 @@ public class RelayManager : MonoBehaviour
 
         Transport.SetRelayServerData(relayJoinData.IPv4Address, relayJoinData.Port, relayJoinData.AllocationIDBytes,
             relayJoinData.Key, relayJoinData.ConnectionData, relayJoinData.HostConnectionData);
+            NetworkManager.Singleton.StartClient();
 
         return relayJoinData;
     }
