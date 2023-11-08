@@ -61,10 +61,15 @@ namespace HS4.PlayerCore
             if(IsOwner && !_isHider) {
                 var result = GetSeenVictim();
                 if(result != null) {
-                    if(IsOwner)
-                    GameController.Instance.KillPlayerServerRpc(result.GetComponent<NetworkObject>().OwnerClientId);
+                    KillPlayerServerRpc(result.GetComponent<NetworkObject>().OwnerClientId);
                 }
             }
+        }
+
+        [ServerRpc]
+        public void KillPlayerServerRpc(ulong clientId)
+        {
+            GameController.Instance.KillPlayer(clientId);
         }
 
         private Collider GetSeenVictim()

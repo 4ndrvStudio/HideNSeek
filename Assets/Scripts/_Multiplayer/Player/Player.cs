@@ -43,9 +43,15 @@ namespace HS4.PlayerCore
             }
         }
 
-        public void SetIsHider() => IsHider.Value = true;
+        public void SetIsHider() {
+            if(IsServer)
+                IsHider.Value = true;
+        } 
         
-        public void SetIsKill()  => IsKill.Value = true;
+        public void SetIsKill() {
+            if(IsServer)
+                IsKill.Value = true;
+        } 
 
         private void OnHiderStateChange(bool previous, bool current)
         {

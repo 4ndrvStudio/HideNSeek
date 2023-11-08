@@ -131,8 +131,7 @@ namespace HS4
             }
         }
 
-        [ServerRpc(RequireOwnership = false)]
-        public void KillPlayerServerRpc(ulong clientId)
+        public void KillPlayer(ulong clientId)
         {
             _playerList[clientId].Player.SetIsKill();
         }

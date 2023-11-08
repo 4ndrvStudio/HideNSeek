@@ -67,7 +67,7 @@ namespace HS4.PlayerCore
         Queue<InputPayload> _serverInputQueue;
 
 
-         [SerializeField] private NetworkVariable<bool> _isCanMove = new NetworkVariable<bool>(true);
+        [SerializeField] private NetworkVariable<bool> _isCanMove = new NetworkVariable<bool>(false);
       
         // Start is called before the first frame update
         void Awake()
@@ -80,6 +80,10 @@ namespace HS4.PlayerCore
             _serverInputQueue = new Queue<InputPayload>();
 
              Test2 =Instantiate(test);
+        }
+
+        public void EnableInput() {
+            _isCanMove.Value = true;
         }
 
         public void SetCanMove(bool isKill) => _isCanMove.Value = !isKill;
