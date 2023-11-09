@@ -8,6 +8,8 @@ using UnityEngine.UI;
 namespace HS4
 {
     using PlayerCore;
+    using Unity.Collections;
+
     public class PlayerInRoom
     {
         public Player Player;
@@ -30,8 +32,9 @@ namespace HS4
         private Dictionary<ulong, PlayerInRoom> _playerList = new();
 
         private int Count = 0;
-
+        [SerializeField] private GameObject _startgamePanel;
         [SerializeField] private TextMeshProUGUI _timeText;
+        [SerializeField] private TextMeshProUGUI _characterTypeText;
         [SerializeField] private Button _startFindingBtn;
 
         public NetworkVariable<float> Time = new NetworkVariable<float>();
@@ -39,6 +42,8 @@ namespace HS4
         private NetworkVariable<bool> m_CountdownStarted = new NetworkVariable<bool>(false);
 
         private float time;
+
+        private bool _isHider;
 
         private void Start()
         {
@@ -50,8 +55,6 @@ namespace HS4
         {
             _timeText.text = time.ToString();
         }
-
-
 
         public override void OnNetworkSpawn()
         {
@@ -75,6 +78,7 @@ namespace HS4
 
         private void OnClientConnectedCallback(ulong clientId)
         {
+
             if (NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.TryGetComponent(out Player player))
             {
                 // Count++;
@@ -109,6 +113,8 @@ namespace HS4
 
         private void RandomChoosePlayer()
         {
+            if(IsServer == false) return;
+            
             List<KeyValuePair<ulong, PlayerInRoom>> playerList = new List<KeyValuePair<ulong, PlayerInRoom>>(_playerList);
 
             System.Random random = new System.Random();
@@ -119,16 +125,28 @@ namespace HS4
                 playerList[2].Value.IsHider = false;
 
             _playerList = new Dictionary<ulong, PlayerInRoom>();
-          
+ 
             foreach (var kvp in playerList)
             {
                 _playerList.Add(kvp.Key, kvp.Value);
-                
                 if(kvp.Value.IsHider) {
-                    if(IsServer)
                     kvp.Value.Player.SetIsHider();
+                    kvp.Value.Player.EnableMove();
                 }
             }
+           
+            
+        }
+
+        
+        [ClientRpc]
+        public void SendListClientRpc() {
+            
+        }
+
+        [ClientRpc]
+        public void StartGameSetupClientRpc(bool isHider) {
+            
         }
 
         public void KillPlayer(ulong clientId)

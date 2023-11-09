@@ -83,6 +83,7 @@ namespace HS4.PlayerCore
         }
 
         public void EnableInput() {
+            if(IsServer)
             _isCanMove.Value = true;
         }
 

@@ -47,6 +47,11 @@ namespace HS4.PlayerCore
             if(IsServer)
                 IsHider.Value = true;
         } 
+
+        public void EnableMove() {
+            if(IsServer)
+            _playerMovement.EnableInput();
+        }
         
         public void SetIsKill() {
             if(IsServer)
