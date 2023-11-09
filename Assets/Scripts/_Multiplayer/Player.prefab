@@ -5155,7 +5155,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerView: {fileID: 618698326890096672}
-  _playerMovement: {fileID: 2140308536106417594}
+  PlayerMovement: {fileID: 2140308536106417594}
   IsHider:
     m_InternalValue: 0
   IsKill:

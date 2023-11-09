@@ -588,6 +588,10 @@ PrefabInstance:
       propertyPath: m_sharedMaterial
       value: 
       objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+    - target: {fileID: 1994278329505076705, guid: 673a4b814bde46a43ba8d704432f2932, type: 3}
+      propertyPath: m_SortingOrder
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 3224368534340296544, guid: 673a4b814bde46a43ba8d704432f2932, type: 3}
       propertyPath: m_fontAsset
       value: 
@@ -2205,12 +2209,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c9fb0114ed86fb41953e09902512623, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _startgamePanel: {fileID: 0}
+  _startgamePanel: {fileID: 1320002816}
   _timeText: {fileID: 615249791}
-  _characterTypeText: {fileID: 0}
+  _characterTypeText: {fileID: 326805560}
   _startFindingBtn: {fileID: 1843370817}
-  Time:
-    m_InternalValue: 0
+  _connectionList: 
 --- !u!114 &1197430473
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2295,7 +2298,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1320002817
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3410,8 +3413,8 @@ SceneRoots:
   - {fileID: 1197430471}
   - {fileID: 334332968}
   - {fileID: 1909800748}
-  - {fileID: 166349248}
   - {fileID: 573060807}
+  - {fileID: 166349248}
   - {fileID: 1723982713}
   - {fileID: 809179270}
   - {fileID: 5900886014793115572}

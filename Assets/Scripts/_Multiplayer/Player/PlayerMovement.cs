@@ -42,7 +42,6 @@ namespace HS4.PlayerCore
         [Header("Stats")]
         [SerializeField] private GameObject _footstepOb;
         [SerializeField] private float _speed = 1f;
-        [SerializeField] private float _rotationSpeed = 180f;
         public float SpeedChangeRate = 10.0f;
         public float RotationSmoothTime = 12f;
         private float _targetRotation = 0.0f;
@@ -66,8 +65,8 @@ namespace HS4.PlayerCore
         CircularBuffer<StatePayload> _serverStateBuffer;
         Queue<InputPayload> _serverInputQueue;
 
-
         [SerializeField] private NetworkVariable<bool> _isCanMove = new NetworkVariable<bool>(false);
+        public bool _isStartGame;
       
         // Start is called before the first frame update
         void Awake()
@@ -83,22 +82,26 @@ namespace HS4.PlayerCore
         }
 
         public void EnableInput() {
-            if(IsServer)
-            _isCanMove.Value = true;
+            _isStartGame = true;
         }
 
-        public void SetCanMove(bool isKill) => _isCanMove.Value = !isKill;
+        public void SetCanMove(bool isKill) {
+            if(IsServer)
+             _isCanMove.Value = !isKill;
+        } 
 
         void Update()
         {
-            _timer.Update(Time.deltaTime);
+          //  _timer.Update(Time.deltaTime);
          
             Test2.transform.position = this.transform.position;
             
         }
         private void FixedUpdate()
         {
-            if(!_isCanMove.Value) 
+            _timer.Update(Time.fixedDeltaTime);
+            Test2.transform.position = this.transform.position;
+            if(!_isCanMove.Value || !_isStartGame ) 
                 return;
 
             while (_timer.ShouldTick())
@@ -197,18 +200,18 @@ namespace HS4.PlayerCore
 
                 _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg;
 
-                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0.0f, _targetRotation, 0.0f), RotationSmoothTime * Time.deltaTime);
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0.0f, _targetRotation, 0.0f), RotationSmoothTime * Time.fixedDeltaTime);
 
                 Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
                
-                _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
-                            new Vector3(0.0f, 0, 0.0f) * Time.deltaTime);
+                _controller.Move(targetDirection.normalized * (_speed * Time.fixedDeltaTime) +
+                            new Vector3(0.0f, 0, 0.0f) * Time.fixedDeltaTime);
                 
                 
                
                 _animation.Walk();
 
-                if(_footStep == false && _playerView.ObjectHide.Value)
+                if(_footStep == false && _playerView.ObjectHide)
                 {
                     StartCoroutine(InitFootstep());
                 }

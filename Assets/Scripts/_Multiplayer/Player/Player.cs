@@ -2,17 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
-using Utils;
 
 namespace HS4.PlayerCore
 {
     public class Player : NetworkBehaviour
     {
+        public static Player LocalPlayer;
         [Header("Refs")]
         public PlayerView PlayerView;
-        [SerializeField] private PlayerMovement _playerMovement;
+        public PlayerMovement PlayerMovement;
         //stats
-        public  NetworkVariable<bool> IsHider = new NetworkVariable<bool>(false);
+        public NetworkVariable<bool> IsHider = new NetworkVariable<bool>(true);
         public NetworkVariable<bool> IsKill = new NetworkVariable<bool>(false);
 
         public override void OnNetworkSpawn()
@@ -23,37 +23,61 @@ namespace HS4.PlayerCore
             //    _playerCamera.Priority = 0;
             //    return;
             //}      
+            if(IsOwner) {
+                if(LocalPlayer == null) {
+                    LocalPlayer =this;
+                }
+            }
             IsHider.OnValueChanged += OnHiderStateChange;
             IsKill.OnValueChanged += OnIsKillStateChange;
 
-            SetupCharacterType();
-
+            if(IsServer) {
+                IsHider.Value = true;
+            }
+             SetupCharacterType();
+           
         }
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
             IsHider.OnValueChanged -= OnHiderStateChange;
             IsKill.OnValueChanged -= OnIsKillStateChange;
+            LocalPlayer = null;
         }
 
         [ClientRpc]
-        public void SetStartHideAndSeekClientRpc() {
-            if(IsOwner) {
-                GameController.Instance.HideEnemy(IsHider.Value);
+        public void SetStartHideAndSeekClientRpc() 
+        {
+            
+            if(IsOwner) 
+            {
+                if(IsHider.Value == false) {
+                    PlayerView.TurnOnRadar();
+                } 
+            } else {
+                if(LocalPlayer.IsHider.Value == false && IsHider.Value == true) {
+                   PlayerView.Hide();
+                }
             }
+          
+        
         }
 
-        public void SetIsHider() {
-            if(IsServer)
-                IsHider.Value = true;
+        public void SetIsSeeker() 
+        {
+            if(IsServer) {
+                 IsHider.Value = false;
+            }
         } 
 
-        public void EnableMove() {
-            if(IsServer)
-            _playerMovement.EnableInput();
+        [ClientRpc]
+        public void StartMoveClientRpc() 
+        {
+            PlayerMovement.EnableInput();
         }
         
-        public void SetIsKill() {
+        public void SetIsKill() 
+        {
             if(IsServer)
                 IsKill.Value = true;
         } 
@@ -68,12 +92,18 @@ namespace HS4.PlayerCore
          
            if(IsHider.Value)  
                 gameObject.layer =  LayerMask.NameToLayer("Victim");
+            else 
+                gameObject.layer =  default;
         }
 
         private void OnIsKillStateChange(bool previous, bool current)
         {
+            if(IsServer) {
+                PlayerMovement.SetCanMove(IsKill.Value);
+            }
+            
             PlayerView.SetIsKill(IsKill.Value);
-            _playerMovement.SetCanMove(IsKill.Value);
+          
         }
 
 

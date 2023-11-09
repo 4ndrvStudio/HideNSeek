@@ -4,9 +4,10 @@ using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
-
+using System.Linq;
 namespace HS4
 {
+    using System;
     using PlayerCore;
     using Unity.Collections;
 
@@ -29,21 +30,17 @@ namespace HS4
     {
         public static GameController Instance;
 
-        private Dictionary<ulong, PlayerInRoom> _playerList = new();
-
-        private int Count = 0;
         [SerializeField] private GameObject _startgamePanel;
         [SerializeField] private TextMeshProUGUI _timeText;
         [SerializeField] private TextMeshProUGUI _characterTypeText;
         [SerializeField] private Button _startFindingBtn;
 
-        public NetworkVariable<float> Time = new NetworkVariable<float>();
+        //connection
+        [SerializeField] private List<ulong> _connectionList = new();
+        public Dictionary<ulong, PlayerInRoom> PlayerList = new();
+        private bool _startGame;
+        private float _time;
 
-        private NetworkVariable<bool> m_CountdownStarted = new NetworkVariable<bool>(false);
-
-        private float time;
-
-        private bool _isHider;
 
         private void Start()
         {
@@ -53,7 +50,27 @@ namespace HS4
 
         private void Update()
         {
-            _timeText.text = time.ToString();
+            _timeText.text = _time.ToString("#");
+            if (_startGame)
+            {
+                _time -= Time.deltaTime;
+                if (_time <= 0)
+                {
+                    if (IsHost)
+                    {
+                        StartHideAndSeek();
+                        foreach(var player in PlayerList.Values) {
+                            if(!player.Player.IsHider.Value) {
+                                player.Player.StartMoveClientRpc();
+                            }
+                        }
+                    }
+
+                    _startgamePanel.SetActive(false);
+                    _startGame = false;
+
+                }
+            }
         }
 
         public override void OnNetworkSpawn()
@@ -78,80 +95,107 @@ namespace HS4
 
         private void OnClientConnectedCallback(ulong clientId)
         {
-
-            if (NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.TryGetComponent(out Player player))
-            {
-                // Count++;
-                _playerList.Add(clientId, new PlayerInRoom(player, true));
-            }
+            if (IsServer)
+                _connectionList.Add(clientId);
         }
 
         public void StartHideAndSeek()
         {
-
-            foreach (var player in _playerList.Values)
+            foreach (var player in PlayerList.Values)
             {
-                player.Player.SetStartHideAndSeekClientRpc();
+                player.Player.SetStartHideAndSeekClientRpc();   
+                           
             }
 
         }
 
-        public void HideEnemy(bool _isHider)
-        {
-            if (!_isHider)
-            {
-                Debug.Log(_playerList.Count);
-
-                foreach (var player in _playerList.Values)
-                {
-                    if (player.Player.IsHider.Value)
-                        player.Player.PlayerView.Hide();
-
-                }
-            }
-        }
 
         private void RandomChoosePlayer()
         {
-            if(IsServer == false) return;
-            
-            List<KeyValuePair<ulong, PlayerInRoom>> playerList = new List<KeyValuePair<ulong, PlayerInRoom>>(_playerList);
+            if (IsServer == false) return;
 
             System.Random random = new System.Random();
-            playerList.Sort((x, y) => random.Next(-1, 2));
-            
-            playerList[1].Value.IsHider = false;
-            if(playerList.Count > 3)
-                playerList[2].Value.IsHider = false;
+            _connectionList.Sort((x, y) => random.Next(-1, 2));
 
-            _playerList = new Dictionary<ulong, PlayerInRoom>();
- 
-            foreach (var kvp in playerList)
+            SendListClientRpc(_connectionList.ToArray());
+        }
+
+
+        [ClientRpc]
+        public void SendListClientRpc(ulong[] connectionList)
+        {
+            int count = connectionList.Length > 3 ? 2 : 1;
+            _connectionList = connectionList.ToList();
+            connectionList.ToList<ulong>().ForEach(clientId =>
             {
-                _playerList.Add(kvp.Key, kvp.Value);
-                if(kvp.Value.IsHider) {
-                    kvp.Value.Player.SetIsHider();
-                    kvp.Value.Player.EnableMove();
+
+                if (IsHost)
+                {
+                    if (NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.TryGetComponent(out Player player))
+                    {
+                        PlayerList.Add(clientId, new PlayerInRoom(player, true));
+                        if (count > 0)
+                        {
+                            PlayerList[clientId].IsHider = false;
+                            player.SetIsSeeker();
+                            count--;
+                        } else {
+                            player.StartMoveClientRpc();
+                        }
+                    }
                 }
+                else
+                {
+                    PlayerList.Add(clientId, new PlayerInRoom(null, true));
+                    if (count > 0)
+                    {
+                        PlayerList[clientId].IsHider = false;
+                        count--;
+                    }
+                }
+
+                count--;
+            });
+            StartGameSetup();
+        
+        }
+
+       
+        public void EnableInput() {
+            if(IsHost) {
+                foreach(var player in PlayerList.Values) {
+                    if(player.IsHider) {
+                        player.Player.StartMoveClientRpc();
+                    }
+                }  
+            }
+        }
+
+        public void StartGameSetup()
+        {
+
+            
+            if (!Player.LocalPlayer.IsHider.Value)
+            {
+                //Player focus camera
             }
            
-            
+
+            DisplayUIAndCalTime();
         }
 
-        
-        [ClientRpc]
-        public void SendListClientRpc() {
-            
-        }
-
-        [ClientRpc]
-        public void StartGameSetupClientRpc(bool isHider) {
-            
-        }
-
-        public void KillPlayer(ulong clientId)
+        private void DisplayUIAndCalTime()
         {
-            _playerList[clientId].Player.SetIsKill();
+            _startgamePanel.SetActive(true);
+            _characterTypeText.text = Player.LocalPlayer.IsHider.Value ? "You are Hider!" : "You Are Seeker";
+            _time = 7f;
+            _startGame = true;
+        }
+
+        [ServerRpc(RequireOwnership =false)]
+        public void KillPlayerServerRpc(ulong clientId)
+        {
+            PlayerList[clientId].Player.SetIsKill();
         }
 
 

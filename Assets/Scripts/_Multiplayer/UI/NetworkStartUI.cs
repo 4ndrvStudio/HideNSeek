@@ -14,6 +14,7 @@ namespace HS4
         void Start() {
             _startHostButton.onClick.AddListener(StartHost);
             _startClientButton.onClick.AddListener(StartClient);
+            Application.targetFrameRate = 60;
         }
 
         async void StartClient() {

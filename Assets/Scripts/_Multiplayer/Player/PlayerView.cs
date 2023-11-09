@@ -20,13 +20,12 @@ namespace HS4.PlayerCore
         [SerializeField] private CircleRadarView _circleRadarView;
 
         [SerializeField] private bool _isHider;
-        public NetworkVariable<bool> ObjectHide = new NetworkVariable<bool>(false);
-
+        //public NetworkVariable<bool> ObjectHide = new NetworkVariable<bool>(default,NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        public bool ObjectHide;
         public void SetCharacterType(bool isHider)
         {
             _isHider = isHider;
             SetBody(isHider);
-            SetRadar(isHider);
         }
 
         private void SetBody(bool isHider) {
@@ -39,38 +38,37 @@ namespace HS4.PlayerCore
 
         public void Hide() {
             _skinMeshRender.enabled = false;
-            ObjectHide.Value = true;
+            ObjectHide = true;
         } 
+        public void TurnOnRadar() {
+            _radarView.gameObject.SetActive(true);
+            _circleRadarView.gameObject.SetActive(true);
+        }
 
         public void SetIsKill(bool isKill) {
             _caseOb.SetActive(isKill);
             if(isKill) {
                 _skinMeshRender.enabled = true;
                 _playerAnimation.IsDied();
-            }
-             
-        }
-
-        private void SetRadar(bool isHider) {
-            _radarView.gameObject.SetActive(!isHider);
-            _circleRadarView.gameObject.SetActive(!isHider);
+            } 
         }
 
 
-        private void Update() {
+        private void FixedUpdate() {
+
             if(IsOwner && !_isHider) {
                 var result = GetSeenVictim();
                 if(result != null) {
-                    KillPlayerServerRpc(result.GetComponent<NetworkObject>().OwnerClientId);
+                    GameController.Instance.KillPlayerServerRpc(result.GetComponent<NetworkObject>().OwnerClientId);
                 }
             }
         }
 
-        [ServerRpc]
-        public void KillPlayerServerRpc(ulong clientId)
-        {
-            GameController.Instance.KillPlayer(clientId);
-        }
+        // [ServerRpc]
+        // public void KillPlayerServerRpc(ulong clientId)
+        // {
+        //     GameController.Instance.KillPlayer(clientId);
+        // }
 
         private Collider GetSeenVictim()
         {
