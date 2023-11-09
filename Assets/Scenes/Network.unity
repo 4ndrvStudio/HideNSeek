@@ -602,7 +602,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6206875093998293802, guid: 673a4b814bde46a43ba8d704432f2932, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9015123340051940185, guid: 673a4b814bde46a43ba8d704432f2932, type: 3}
       propertyPath: m_Pivot.x
@@ -2205,7 +2205,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c9fb0114ed86fb41953e09902512623, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _startgamePanel: {fileID: 0}
   _timeText: {fileID: 615249791}
+  _characterTypeText: {fileID: 0}
   _startFindingBtn: {fileID: 1843370817}
   Time:
     m_InternalValue: 0
