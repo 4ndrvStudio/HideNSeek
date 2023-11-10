@@ -9,6 +9,8 @@ namespace HS4
 {
     using System;
     using System.Threading.Tasks;
+    using DG.Tweening;
+    using Game.Camera;
     using HS4.UI;
     using PlayerCore;
     using Unity.Collections;
@@ -27,21 +29,23 @@ namespace HS4
         }
     }
 
-
     public class GameController : NetworkBehaviour
     {
         public static GameController Instance;
+        [SerializeField] private CameraFollower _camera;
         [SerializeField] private UIGameplay _uiGameplay;
         [SerializeField] private GameObject _startgamePanel;
         [SerializeField] private TextMeshProUGUI _timeText;
         [SerializeField] private TextMeshProUGUI _characterTypeText;
         [SerializeField] private Button _startFindingBtn;
+        [SerializeField] private List<GameObject> _spawnerPoint = new();
 
         //connection
         [SerializeField] private List<ulong> _connectionList = new();
         public Dictionary<ulong, PlayerInRoom> PlayerList = new();
         private bool _startGame;
         private float _time;
+        private float _gameplayTime = 30f;
 
 
         private void Start()
@@ -52,7 +56,7 @@ namespace HS4
 
         private void Update()
         {
-            _timeText.text = _time.ToString("#");
+            _uiGameplay.UpdateTime(_time.ToString("#")) ;
             if (_startGame)
             {
                 _time -= Time.deltaTime;
@@ -66,9 +70,8 @@ namespace HS4
                                 player.Player.StartMoveClientRpc();
                             }
                         }
+                        StartGamePlayClientRpc();
                     }
-
-                    _startgamePanel.SetActive(false);
                     _startGame = false;
                 }
             }
@@ -78,26 +81,50 @@ namespace HS4
         {
             base.OnNetworkSpawn();
 
-            NetworkManager.OnClientConnectedCallback += OnClientConnectedCallback;
+            if(IsServer) {
+                NetworkManager.OnClientConnectedCallback += OnClientConnectedCallback;
+                NetworkManager.OnClientDisconnectCallback += OnClientDisconnectCallback;
+            }
+       
+
 
             if (IsServer)
                 _startFindingBtn.onClick.AddListener(() =>
                 {
                     RandomChoosePlayer();
                 });
+        
         }
 
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
-            NetworkManager.OnClientConnectedCallback += OnClientConnectedCallback;
-
+            if(IsServer) {
+                    NetworkManager.OnClientConnectedCallback -= OnClientConnectedCallback;
+                    NetworkManager.OnClientDisconnectCallback -= OnClientDisconnectCallback;
+            }
+        
         }
+
+        public Transform GetPointToSpawn() {
+            return _spawnerPoint[_connectionList.Count].transform;
+        }
+
 
         private void OnClientConnectedCallback(ulong clientId)
         {
             if (IsServer)
                 _connectionList.Add(clientId);
+        }
+
+        private void OnClientDisconnectCallback(ulong clientId) {
+            UpdatePlayerOutClientRpc(clientId);
+        }
+        [ClientRpc]
+        private void UpdatePlayerOutClientRpc(ulong clientId) {
+            PlayerList.Remove(clientId);
+            _connectionList.Remove(clientId);
+            _uiGameplay.UpdateTargetList(PlayerList);
         }
 
         public void StartHideAndSeek()
@@ -106,9 +133,7 @@ namespace HS4
             {
                 player.Player.SetStartHideAndSeekClientRpc();   
             }
-
         }
-
 
         private void RandomChoosePlayer()
         {
@@ -116,7 +141,6 @@ namespace HS4
 
             System.Random random = new System.Random();
             _connectionList.Sort((x, y) => random.Next(-1, 2));
-
 
             SendListClientRpc(_connectionList.ToArray());
         }
@@ -126,7 +150,9 @@ namespace HS4
         public void SendListClientRpc(ulong[] connectionList)
         {
             int count = connectionList.Length > 3 ? 2 : 1;
+           
             _connectionList = connectionList.ToList();
+            PlayerList.Clear();
             connectionList.ToList<ulong>().ForEach(clientId =>
             {
 
@@ -154,38 +180,29 @@ namespace HS4
                         count--;
                     }
                 }
-
-                count--;
             });
 
-            StartGameSetup();
+            StartupGame();
         
         }
 
-        public async void StartGameSetup()
+        public async void StartupGame()
         {
             await Task.Delay(1000);
-            if (!Player.LocalPlayer.IsHider.Value)
-            {
-                //Player focus camera
-            }
-           
-
-            DisplayUIAndCalTime();
-        }
-
-        private void DisplayUIAndCalTime()
-        {
-            _startgamePanel.SetActive(true);
-            _characterTypeText.text = Player.LocalPlayer.IsHider.Value ? "You are Hider!" : "You Are Seeker";
+            _camera.SetTarget(Player.LocalPlayer.gameObject);
+            _camera.ZoomTo(Player.LocalPlayer.IsHider.Value? 35 : 15,1);
+            _uiGameplay.DisplayGameStartUp(Player.LocalPlayer.IsHider.Value);
             _time = 7f;
             _startGame = true;
         }
 
         [ClientRpc]
-        private void DisplayGamePlayUIClientRpc() 
+        private void StartGamePlayClientRpc() 
         {
-
+            _uiGameplay.DisplayInPlayGame(PlayerList);
+            _uiGameplay.TimeReminingIcon.fillAmount = 0;
+            _uiGameplay.TimeReminingIcon.DOFillAmount(1, _gameplayTime);
+            _camera.ZoomTo(35,1);
         }
 
         [ServerRpc(RequireOwnership =false)]
@@ -193,7 +210,17 @@ namespace HS4
         {
             PlayerList[clientId].Player.SetIsKill();
             PlayerList[clientId].WasCatching = true;
+            UpdateCatchedClientRpc(clientId);
             CheckCatchedAllPlayer();
+        }
+
+        [ClientRpc]
+        public void UpdateCatchedClientRpc(ulong clientId) 
+        {
+            if(!IsHost)
+                PlayerList[clientId].WasCatching = true;
+
+            _uiGameplay.UpdateTargetList(PlayerList);
         }
 
         private void CheckCatchedAllPlayer() {
@@ -206,8 +233,20 @@ namespace HS4
             }   
 
             if(catchedAll)
-                Debug.Log("Engame");
-            
+                ResetGame();
+        }
+        
+        private void ResetGame() {
+            //reset position
+            foreach(var player in PlayerList.Values) {
+                player.Player.Reset();
+            }
+            ResetUIClientRpc();
+        }
+        //UI
+        [ClientRpc]
+        public void ResetUIClientRpc() {
+            _uiGameplay.HideInPlayGameUI();
         }
 
 

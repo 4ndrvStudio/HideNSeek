@@ -59,6 +59,8 @@ namespace Game.Camera
 
         private void Update()
         {
+            if(player == null) return;
+            
             Vector3 posEnd = player.transform.position - difference;
 
             _transform.position = Vector3.Lerp(_transform.position, posEnd, lerpFactor);

@@ -10,13 +10,15 @@ using UnityEngine.SceneManagement;
 
 namespace HS4
 {
-    public class LobbyResult {
+    public class LobbyResult
+    {
         public bool IsSuccess;
         public string Message;
         public object Data;
     }
 
-    public class LobbyPlayerData {
+    public class LobbyPlayerData
+    {
         public bool IsHost;
         public bool IsReady;
         public string DisplayName;
@@ -40,12 +42,12 @@ namespace HS4
                 {
                     {
                         "IsHost", new PlayerDataObject(
-                            visibility: PlayerDataObject.VisibilityOptions.Member, 
+                            visibility: PlayerDataObject.VisibilityOptions.Member,
                             value: user.IsHost.ToString())
                     },
                     {
                         "IsReady", new PlayerDataObject(
-                            visibility: PlayerDataObject.VisibilityOptions.Member, 
+                            visibility: PlayerDataObject.VisibilityOptions.Member,
                             value: user.IsReady.ToString())
                     },
                     {
@@ -63,41 +65,45 @@ namespace HS4
 
         public async Task<LobbyResult> CreateLobby(string lobbyName, int maxPlayers, LobbyPlayerData playerData, bool isPrivate)
         {
-            try {
-                 string uasId = AuthenticationService.Instance.PlayerId;
+            try
+            {
+                string uasId = AuthenticationService.Instance.PlayerId;
 
-            RelayHostData relayHostData = await RelayManager.Instance.SetupHost(maxPlayers);
+                RelayHostData relayHostData = await RelayManager.Instance.SetupHost(maxPlayers);
 
-            CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions();
+                CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions();
 
-            createLobbyOptions.Data = new Dictionary<string, DataObject> {
+                createLobbyOptions.Data = new Dictionary<string, DataObject> {
                 { "JoinCodeKey", new DataObject(DataObject.VisibilityOptions.Public, relayHostData.JoinCode) }
             };
 
-            createLobbyOptions.Player = new Player(
-                        id: AuthenticationService.Instance.PlayerId,
-                        data: CreateInitialPlayerData(playerData)
-            );
+                createLobbyOptions.Player = new Player(
+                            id: AuthenticationService.Instance.PlayerId,
+                            data: CreateInitialPlayerData(playerData)
+                );
 
-            CurrentLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, createLobbyOptions);
-            SceneManager.LoadSceneAsync("scene_gameplay",LoadSceneMode.Additive);
+                CurrentLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, createLobbyOptions);
 
-            StartCoroutine(HeartbeatLobbyCoroutine(CurrentLobby.Id, 15));
+                StartCoroutine(LoadGamePlayScene(true));
 
-            return new LobbyResult {
+                StartCoroutine(HeartbeatLobbyCoroutine(CurrentLobby.Id, 15));
+
+                return new LobbyResult
+                {
                     IsSuccess = true,
                     Data = CurrentLobby
-                };;
+                }; ;
             }
-            catch(LobbyServiceException e)
+            catch (LobbyServiceException e)
             {
                 Debug.Log(e.Message);
-                return new LobbyResult {
+                return new LobbyResult
+                {
                     IsSuccess = false,
                     Message = e.Message
                 };
             }
-           
+
         }
 
 
@@ -106,20 +112,22 @@ namespace HS4
             try
             {
                 JoinLobbyByIdOptions options = new JoinLobbyByIdOptions();
-              
+
                 options.Player = new Player(
                         id: AuthenticationService.Instance.PlayerId,
                         data: CreateInitialPlayerData(playerData)
                 );
-             
-                CurrentLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId,options);
+
+                CurrentLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId, options);
                 StartCoroutine(HeartbeatLobbyCoroutine(CurrentLobby.Id, 15));
-               
+
                 string joinCodeKey = CurrentLobby.Data["JoinCodeKey"].Value;
                 await RelayManager.Instance.JoinRelay(joinCodeKey);
-                SceneManager.LoadSceneAsync("scene_gameplay",LoadSceneMode.Additive);
 
-                return new LobbyResult {
+                StartCoroutine(LoadGamePlayScene(false));
+
+                return new LobbyResult
+                {
                     IsSuccess = true,
                     Data = CurrentLobby
                 };
@@ -127,11 +135,40 @@ namespace HS4
             }
             catch (LobbyServiceException e)
             {
-                return new LobbyResult {
+                return new LobbyResult
+                {
                     IsSuccess = false,
                     Message = e.Message
                 };
             }
+        }
+
+        IEnumerator LoadGamePlayScene(bool isHost)
+        {
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("scene_gameplay", LoadSceneMode.Additive); ;
+
+            while (!asyncLoad.isDone)
+            {
+                yield return null;
+            }
+
+            NetworkManager.Singleton.ConnectionApprovalCallback = ApprovalCheck;
+            
+            if(isHost) {
+                NetworkManager.Singleton.StartHost();
+            }else {
+                NetworkManager.Singleton.StartClient();
+            }
+
+
+        }
+        private void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
+        {
+            Transform target = GameController.Instance.GetPointToSpawn();
+            response.Position = target.position;
+            response.Rotation = target.rotation;
+            response.Approved = true;
+            response.CreatePlayerObject = true;
         }
 
         public async Task<LobbyResult> RetrieveLobbyList()
@@ -159,8 +196,9 @@ namespace HS4
                 };
 
                 QueryResponse lobbies = await Lobbies.Instance.QueryLobbiesAsync(options);
-               
-                return new LobbyResult {
+
+                return new LobbyResult
+                {
                     IsSuccess = true,
                     Data = lobbies
                 };
@@ -169,7 +207,8 @@ namespace HS4
             catch (LobbyServiceException e)
             {
                 Debug.Log(e);
-                return new LobbyResult {
+                return new LobbyResult
+                {
                     IsSuccess = false,
                     Message = e.Message
                 };
@@ -186,7 +225,8 @@ namespace HS4
             }
         }
 
-        public void LeaveLobby() {
+        public void LeaveLobby()
+        {
             NetworkManager.Singleton.Shutdown();
             SceneManager.UnloadSceneAsync("scene_gameplay");
             StopAllCoroutines();

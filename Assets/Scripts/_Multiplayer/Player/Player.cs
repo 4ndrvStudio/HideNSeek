@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -15,14 +16,13 @@ namespace HS4.PlayerCore
         public NetworkVariable<bool> IsHider = new NetworkVariable<bool>(true);
         public NetworkVariable<bool> IsKill = new NetworkVariable<bool>(false);
 
+        private Vector3 _rootPos;
+
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-            //if (!IsOwner)
-            //{
-            //    _playerCamera.Priority = 0;
-            //    return;
-            //}      
+            _rootPos = transform.position;
+
             if(IsOwner) {
                 if(LocalPlayer == null) {
                     LocalPlayer =this;
@@ -34,7 +34,8 @@ namespace HS4.PlayerCore
             if(IsServer) {
                 IsHider.Value = true;
             }
-             SetupCharacterType();
+
+            SetupCharacterType();
            
         }
         public override void OnNetworkDespawn()
@@ -48,7 +49,6 @@ namespace HS4.PlayerCore
         [ClientRpc]
         public void SetStartHideAndSeekClientRpc() 
         {
-            
             if(IsOwner) 
             {
                 if(IsHider.Value == false) {
@@ -59,8 +59,23 @@ namespace HS4.PlayerCore
                    PlayerView.Hide();
                 }
             }
-          
-        
+        }
+
+        public async void Reset() {
+            IsHider.Value = true;
+            await Task.Delay(2000);
+            IsKill.Value = false;
+            ResetPositionAndViewClientRpc();
+        }
+
+        [ClientRpc]
+        public void ResetPositionAndViewClientRpc() {
+            if(IsOwner || IsServer) {
+                this.transform.position = _rootPos;
+            }
+            
+            PlayerView.Reset();
+            PlayerMovement.ResetPlayer();
         }
 
         public void SetIsSeeker() 
@@ -98,12 +113,8 @@ namespace HS4.PlayerCore
 
         private void OnIsKillStateChange(bool previous, bool current)
         {
-            if(IsServer) {
-                PlayerMovement.SetCanMove(IsKill.Value);
-            }
-            
+            PlayerMovement.SetCanMove(IsKill.Value);
             PlayerView.SetIsKill(IsKill.Value);
-          
         }
 
 

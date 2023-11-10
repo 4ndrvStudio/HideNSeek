@@ -31,15 +31,24 @@ namespace HS4.PlayerCore
         private void SetBody(bool isHider) {
             _hiderBody.SetActive(isHider);
             _seekerBody.SetActive(!isHider);
+            ObjectHide = false;
             var targetBody = isHider ? _hiderBody : _seekerBody;
             _skinMeshRender = targetBody.GetComponentInChildren<SkinnedMeshRenderer>();
             _playerAnimation.SetAnimator(targetBody.GetComponent<Animator>());
+        }
+
+        public void Reset() {
+            _radarView.gameObject.SetActive(false);
+            _circleRadarView.gameObject.SetActive(false);
+            _playerAnimation.Walk();
+            ObjectHide = false;
         }
 
         public void Hide() {
             _skinMeshRender.enabled = false;
             ObjectHide = true;
         } 
+    
         public void TurnOnRadar() {
             _radarView.gameObject.SetActive(true);
             _circleRadarView.gameObject.SetActive(true);
@@ -49,7 +58,7 @@ namespace HS4.PlayerCore
             _caseOb.SetActive(isKill);
             if(isKill) {
                 _skinMeshRender.enabled = true;
-                _playerAnimation.IsDied();
+                _playerAnimation.Die();
             } 
         }
 
@@ -64,15 +73,9 @@ namespace HS4.PlayerCore
             }
         }
 
-        // [ServerRpc]
-        // public void KillPlayerServerRpc(ulong clientId)
-        // {
-        //     GameController.Instance.KillPlayer(clientId);
-        // }
-
         private Collider GetSeenVictim()
         {
-            if (_isHider)
+            if (_isHider || !_radarView.gameObject.activeSelf ||!_radarView.gameObject.activeSelf)
                 return null;
 
             var result = _radarView.GetSeenVictim();

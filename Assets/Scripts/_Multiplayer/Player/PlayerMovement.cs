@@ -78,7 +78,7 @@ namespace HS4.PlayerCore
             _serverStateBuffer = new CircularBuffer<StatePayload>(k_bufferSize);
             _serverInputQueue = new Queue<InputPayload>();
 
-             Test2 =Instantiate(test);
+            // Test2 =Instantiate(test);
         }
 
         public void EnableInput() {
@@ -90,17 +90,13 @@ namespace HS4.PlayerCore
              _isCanMove.Value = !isKill;
         } 
 
-        void Update()
-        {
-          //  _timer.Update(Time.deltaTime);
-         
-            Test2.transform.position = this.transform.position;
-            
+        public void ResetPlayer() {
+            _isStartGame = false;
         }
         private void FixedUpdate()
         {
             _timer.Update(Time.fixedDeltaTime);
-            Test2.transform.position = this.transform.position;
+           // Test2.transform.position = this.transform.position;
             if(!_isCanMove.Value || !_isStartGame ) 
                 return;
 
@@ -126,7 +122,7 @@ namespace HS4.PlayerCore
                 };
 
                 _clientInputBuffer.Add(inputPayload, bufferIndex);
-               SendToServerRpc(inputPayload);
+                SendToServerRpc(inputPayload);
 
                 if (!IsHost)
                 {
@@ -227,12 +223,12 @@ namespace HS4.PlayerCore
 
         IEnumerator InitFootstep() {
             _footStep = true;
+            yield return new WaitForSeconds(3f);
             GameObject footstep = Instantiate(_footstepOb, this.transform.position,Quaternion.identity);
             footstep.GetComponent<ParticleSystem>().Play();
             footstep.transform.position = new Vector3(transform.position.x, 0.5902482f, transform.position.z);
             footstep.transform.eulerAngles = new Vector3(90f,transform.eulerAngles.y,0);
-            yield return new WaitForSeconds(3f);
-            Destroy(footstep);
+            Destroy(footstep,2f);
             _footStep = false;
         }
 
