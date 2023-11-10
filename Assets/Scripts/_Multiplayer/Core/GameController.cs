@@ -8,6 +8,8 @@ using System.Linq;
 namespace HS4
 {
     using System;
+    using System.Threading.Tasks;
+    using HS4.UI;
     using PlayerCore;
     using Unity.Collections;
 
@@ -29,7 +31,7 @@ namespace HS4
     public class GameController : NetworkBehaviour
     {
         public static GameController Instance;
-
+        [SerializeField] private UIGameplay _uiGameplay;
         [SerializeField] private GameObject _startgamePanel;
         [SerializeField] private TextMeshProUGUI _timeText;
         [SerializeField] private TextMeshProUGUI _characterTypeText;
@@ -68,7 +70,6 @@ namespace HS4
 
                     _startgamePanel.SetActive(false);
                     _startGame = false;
-
                 }
             }
         }
@@ -104,7 +105,6 @@ namespace HS4
             foreach (var player in PlayerList.Values)
             {
                 player.Player.SetStartHideAndSeekClientRpc();   
-                           
             }
 
         }
@@ -116,6 +116,7 @@ namespace HS4
 
             System.Random random = new System.Random();
             _connectionList.Sort((x, y) => random.Next(-1, 2));
+
 
             SendListClientRpc(_connectionList.ToArray());
         }
@@ -156,25 +157,14 @@ namespace HS4
 
                 count--;
             });
+
             StartGameSetup();
         
         }
 
-       
-        public void EnableInput() {
-            if(IsHost) {
-                foreach(var player in PlayerList.Values) {
-                    if(player.IsHider) {
-                        player.Player.StartMoveClientRpc();
-                    }
-                }  
-            }
-        }
-
-        public void StartGameSetup()
+        public async void StartGameSetup()
         {
-
-            
+            await Task.Delay(1000);
             if (!Player.LocalPlayer.IsHider.Value)
             {
                 //Player focus camera
@@ -192,10 +182,32 @@ namespace HS4
             _startGame = true;
         }
 
+        [ClientRpc]
+        private void DisplayGamePlayUIClientRpc() 
+        {
+
+        }
+
         [ServerRpc(RequireOwnership =false)]
         public void KillPlayerServerRpc(ulong clientId)
         {
             PlayerList[clientId].Player.SetIsKill();
+            PlayerList[clientId].WasCatching = true;
+            CheckCatchedAllPlayer();
+        }
+
+        private void CheckCatchedAllPlayer() {
+
+            bool catchedAll = true;
+            foreach (var player in PlayerList.Values)
+            {
+                if(player.IsHider && player.WasCatching ==false)
+                    catchedAll = false;
+            }   
+
+            if(catchedAll)
+                Debug.Log("Engame");
+            
         }
 
 
