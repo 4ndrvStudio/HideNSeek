@@ -34,9 +34,6 @@ namespace HS4
         public static GameController Instance;
         [SerializeField] private CameraFollower _camera;
         [SerializeField] private UIGameplay _uiGameplay;
-        [SerializeField] private GameObject _startgamePanel;
-        [SerializeField] private TextMeshProUGUI _timeText;
-        [SerializeField] private TextMeshProUGUI _characterTypeText;
         [SerializeField] private Button _startFindingBtn;
         [SerializeField] private List<GameObject> _spawnerPoint = new();
 
@@ -46,17 +43,20 @@ namespace HS4
         private bool _startGame;
         private float _time;
         private float _gameplayTime = 30f;
-
+        private Tweener _gameTimeTweener;
 
         private void Start()
         {
             if (Instance == null)
                 Instance = this;
+            
+            _camera = CameraFollower.Instance;
         }
 
         private void Update()
         {
             _uiGameplay.UpdateTime(_time.ToString("#")) ;
+         
             if (_startGame)
             {
                 _time -= Time.deltaTime;
@@ -84,16 +84,20 @@ namespace HS4
             if(IsServer) {
                 NetworkManager.OnClientConnectedCallback += OnClientConnectedCallback;
                 NetworkManager.OnClientDisconnectCallback += OnClientDisconnectCallback;
+
+
             }
-       
 
-
-            if (IsServer)
+            if (IsServer && _startFindingBtn != null )
                 _startFindingBtn.onClick.AddListener(() =>
                 {
                     RandomChoosePlayer();
                 });
         
+        } 
+        public void StartGame() {
+            if(IsServer)
+                RandomChoosePlayer();
         }
 
         public override void OnNetworkDespawn()
@@ -201,17 +205,29 @@ namespace HS4
         {
             _uiGameplay.DisplayInPlayGame(PlayerList);
             _uiGameplay.TimeReminingIcon.fillAmount = 0;
-            _uiGameplay.TimeReminingIcon.DOFillAmount(1, _gameplayTime);
+           _gameTimeTweener = _uiGameplay.TimeReminingIcon.DOFillAmount(1, _gameplayTime)
+                .OnComplete(() => {
+                    if(IsHost) {
+                        if(!CheckCatchedAllPlayer())    
+                            ResetGame(isHiderWin: true);
+                    }
+                });
             _camera.ZoomTo(35,1);
         }
 
         [ServerRpc(RequireOwnership =false)]
         public void KillPlayerServerRpc(ulong clientId)
         {
+            if(PlayerList[clientId].WasCatching) 
+                return;
+
             PlayerList[clientId].Player.SetIsKill();
             PlayerList[clientId].WasCatching = true;
             UpdateCatchedClientRpc(clientId);
-            CheckCatchedAllPlayer();
+            
+            if(CheckCatchedAllPlayer())
+                ResetGame(isHiderWin: false);
+
         }
 
         [ClientRpc]
@@ -223,7 +239,7 @@ namespace HS4
             _uiGameplay.UpdateTargetList(PlayerList);
         }
 
-        private void CheckCatchedAllPlayer() {
+        private bool CheckCatchedAllPlayer() {
 
             bool catchedAll = true;
             foreach (var player in PlayerList.Values)
@@ -231,22 +247,36 @@ namespace HS4
                 if(player.IsHider && player.WasCatching ==false)
                     catchedAll = false;
             }   
-
-            if(catchedAll)
-                ResetGame();
+            return catchedAll;
         }
-        
-        private void ResetGame() {
+
+        //0 is seeker win
+        private async void ResetGame(bool isHiderWin) {
             //reset position
+          
+            ResetUIAndSendResultClientRpc(isHiderWin);
+            await Task.Delay(300);
             foreach(var player in PlayerList.Values) {
                 player.Player.Reset();
             }
-            ResetUIClientRpc();
+            
         }
         //UI
         [ClientRpc]
-        public void ResetUIClientRpc() {
+        public void ResetUIAndSendResultClientRpc(bool isHiderWin) {
             _uiGameplay.HideInPlayGameUI();
+            _gameTimeTweener.Kill();
+            bool wincheck = isHiderWin == Player.LocalPlayer.IsHider.Value;
+            if(UIManager.Instance != null) {
+                
+      
+                UIManager.Instance.ToggleView(ViewName.Lobby);
+                UIManager.Instance.ShowPopup(PopupName.GameResult, new Dictionary<string,object> (){
+                    {"result", wincheck}
+                });
+            } else {
+                Debug.Log($"You {wincheck}");
+            }
         }
 
 

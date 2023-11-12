@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Netcode;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,9 +26,10 @@ namespace HS4.UI
                     CharacterType = 1
                 };
                 var joinResult = await LobbyManager.Instance.JoinLobby(_lobby.Id,lobbyPlayerData);
+              
                 if(joinResult.IsSuccess) {
                     UIManager.Instance.ToggleView(ViewName.Lobby, 
-                                new Dictionary<string, object>() {{"lobby",joinResult.Data}});
+                    new Dictionary<string, object>() {{"lobby",joinResult.Data}});
                 }
             });
         }

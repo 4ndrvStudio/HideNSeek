@@ -145,21 +145,21 @@ namespace HS4
 
         IEnumerator LoadGamePlayScene(bool isHost)
         {
-            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("scene_gameplay", LoadSceneMode.Additive); ;
-
-            while (!asyncLoad.isDone)
+            if (isHost)
             {
-                yield return null;
+                AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("scene_gameplay", LoadSceneMode.Additive);
+
+                while (!asyncLoad.isDone)
+                {
+                    yield return null;
+                }
             }
 
             NetworkManager.Singleton.ConnectionApprovalCallback = ApprovalCheck;
-            
-            if(isHost) {
+            if(isHost) 
                 NetworkManager.Singleton.StartHost();
-            }else {
+            else 
                 NetworkManager.Singleton.StartClient();
-            }
-
 
         }
         private void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)

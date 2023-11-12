@@ -8,11 +8,7 @@ namespace HS4.UI
     public enum PopupName
     {
         None,
-        Shop,
-        Waiting,
-        PurchaseNotify,
-        Inventory
-
+        GameResult
     }
 
     public class UIPopup : MonoBehaviour
@@ -20,23 +16,8 @@ namespace HS4.UI
         [SerializeField] private PopupName _popupName = PopupName.None;
         public PopupName PopupName => _popupName;
 
-        [Header("Options Close")]
-        public Button CloseBTN = null;
-        public Button Dimmed = null;
-        [Space]
-
         protected Dictionary<string, object> _customProperties;
 
-        public virtual void Start()
-        {
-            Initialize();
-        }
-
-        public virtual void Initialize()
-        {
-            if (CloseBTN != null) CloseBTN.onClick.AddListener(() => Hide());
-            if (Dimmed != null) Dimmed.onClick.AddListener(() => Hide());
-        }
 
         public virtual void Show(Dictionary<string, object> customProperties = null)
         {

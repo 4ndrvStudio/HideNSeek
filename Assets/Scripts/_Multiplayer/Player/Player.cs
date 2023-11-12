@@ -16,13 +16,15 @@ namespace HS4.PlayerCore
         public NetworkVariable<bool> IsHider = new NetworkVariable<bool>(true);
         public NetworkVariable<bool> IsKill = new NetworkVariable<bool>(false);
 
-        private Vector3 _rootPos;
+        private Vector3 _rootPosition;
+        private Quaternion _rootRotation;
 
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-            _rootPos = transform.position;
-
+            _rootPosition = transform.position;
+            _rootRotation = transform.rotation;
+            
             if(IsOwner) {
                 if(LocalPlayer == null) {
                     LocalPlayer =this;
@@ -71,7 +73,8 @@ namespace HS4.PlayerCore
         [ClientRpc]
         public void ResetPositionAndViewClientRpc() {
             if(IsOwner || IsServer) {
-                this.transform.position = _rootPos;
+                transform.position = _rootPosition;
+                transform.rotation = _rootRotation;
             }
             
             PlayerView.Reset();

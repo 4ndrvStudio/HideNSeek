@@ -69,7 +69,6 @@ public class RelayManager : MonoBehaviour
                 relayHostData.Key, relayHostData.ConnectionData);
 
         Debug.Log($"Relay Server Generated Join Code: {relayHostData.JoinCode}");
-        //NetworkManager.Singleton.StartHost();
 
         return relayHostData;
     }
@@ -90,12 +89,9 @@ public class RelayManager : MonoBehaviour
             IPv4Address = allocation.RelayServer.IpV4,
             JoinCode = joinCode
         };
-
         Transport.SetRelayServerData(relayJoinData.IPv4Address, relayJoinData.Port, relayJoinData.AllocationIDBytes,
             relayJoinData.Key, relayJoinData.ConnectionData, relayJoinData.HostConnectionData);
            
-        //NetworkManager.Singleton.StartClient();
-
         return relayJoinData;
     }
 }

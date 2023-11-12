@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Unity.Services.Authentication;
 using TMPro;
+using Unity.VisualScripting;
 
 namespace HS4.UI
 {
@@ -25,7 +26,7 @@ namespace HS4.UI
         private Lobby _lobby;
         private ILobbyEvents _lobbyEvents;
 
-        private float _time =5f;
+        private float _time = 5f;
         private bool _startCalTime;
 
         private void Start()
@@ -37,14 +38,19 @@ namespace HS4.UI
             _readyBtn.onClick.AddListener(() => ChangeStateReady());
         }
 
-        private void Update() {
-            if(_startCalTime) {
+        private void Update()
+        {
+            if (_startCalTime)
+            {
                 _time -= Time.deltaTime;
                 _timeText.text = $"The game will start in : {_time.ToString("#")}";
-                if(_time<=0) {
+                if (_time <= 0)
+                {
                     Hide();
-                    _time =5f;
-                    _startCalTime =false;
+                    if (GameController.Instance != null)
+                        GameController.Instance.StartGame();
+                    _time = 5f;
+                    _startCalTime = false;
 
                 }
             }
@@ -53,18 +59,26 @@ namespace HS4.UI
         public override async void Show(Dictionary<string, object> customProperties = null)
         {
             base.Show(customProperties);
-            Lobby lobby = customProperties["lobby"] as Lobby;
-            _lobby = lobby;
+            if (customProperties != null)
+            {
+                Lobby lobby = customProperties["lobby"] as Lobby;
+                _lobby = lobby;
+                //Subscribe Events
+                var eventCallbacks = new LobbyEventCallbacks();
+                eventCallbacks.LobbyChanged += OnLobbyChanged;
+                eventCallbacks.KickedFromLobby += OnKickedFromLobby;
+                _lobbyEvents = await Lobbies.Instance.SubscribeToLobbyEventsAsync(_lobby.Id, eventCallbacks);
+
+            }
+            else
+                ChangeStateReady(forceNotReady: true);
+
             _time = 5f;
             _startCalTime = false;
 
             FetchData();
 
-            //Subscribe Events
-            var eventCallbacks = new LobbyEventCallbacks();
-            eventCallbacks.LobbyChanged += OnLobbyChanged;
-            eventCallbacks.KickedFromLobby += OnKickedFromLobby;
-            _lobbyEvents = await Lobbies.Instance.SubscribeToLobbyEventsAsync(lobby.Id, eventCallbacks);
+
         }
 
         public override void Hide()
@@ -78,9 +92,17 @@ namespace HS4.UI
             if (changes.LobbyDeleted)
             {
                 Debug.Log("Room Has been Removed!");
-                LobbyManager.Instance.LeaveLobby();
-                UIManager.Instance.ToggleView(ViewName.Lobbies);
+                string playerId = AuthenticationService.Instance.PlayerId;
+
+                if (_lobby != null)
+                {
+                    LobbyManager.Instance.LeaveLobby();
+                    UIManager.Instance.ToggleView(ViewName.Lobbies);
+                }
+
                 return;
+
+
             }
             else
             {
@@ -98,7 +120,8 @@ namespace HS4.UI
             UIManager.Instance.ToggleView(ViewName.Lobbies);
         }
 
-        private async void ChangeStateReady()
+
+        private async void ChangeStateReady(bool forceNotReady = false)
         {
             try
             {
@@ -106,7 +129,7 @@ namespace HS4.UI
                 var player = _lobby.Players.Find(player => player.Id == playerId);
 
                 UpdatePlayerOptions options = new UpdatePlayerOptions();
-                bool isReady = !bool.Parse(player.Data["IsReady"].Value);
+                bool isReady = forceNotReady ? false : !bool.Parse(player.Data["IsReady"].Value);
                 options.Data = new Dictionary<string, PlayerDataObject>()
                 {
                     {
@@ -151,13 +174,15 @@ namespace HS4.UI
                 else
                     _lobbyUserList[i].Lock();
             }
-            if (allReady && _lobby.Players.Count >1)
+            if (allReady && _lobby.Players.Count > 1)
             {
                 _timePopup.SetActive(true);
                 _startCalTime = true;
                 _time = 5f;
-                
-            }else {
+
+            }
+            else
+            {
                 _timePopup.SetActive(false);
                 _startCalTime = false;
             }

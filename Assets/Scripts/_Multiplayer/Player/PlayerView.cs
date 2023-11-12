@@ -40,7 +40,7 @@ namespace HS4.PlayerCore
         public void Reset() {
             _radarView.gameObject.SetActive(false);
             _circleRadarView.gameObject.SetActive(false);
-            _playerAnimation.Walk();
+            _playerAnimation.Idle();
             ObjectHide = false;
         }
 

@@ -5,6 +5,7 @@ namespace Game.Camera
 {
     public sealed class CameraFollower : MonoBehaviour
     {
+        public static CameraFollower Instance;
         public GameObject player;
         public float lerpFactor;
         public float Radius = 50f;
@@ -30,6 +31,9 @@ namespace Game.Camera
 
         private void Awake()
         {
+            if(Instance == null) {
+                Instance  = this;
+            }
             _defaultPosition = transform.position;
         }
 
