@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@rollup/plugin-json": "^6.0.1",
     "@unity-services/cloud-save": "file:Library/PackageCache/com.unity.services.cloudcode@2.5.1/UnityServicesNpmLocal~/cloud-save-0.0.5.tgz",
     "@unity-services/cloud-save-1.0": "file:Library\\PackageCache\\com.unity.services.cloudcode@2.5.1\\UnityServicesNpmLocal~\\cloud-save-1.0.1.tgz",
     "@unity-services/economy-2.0": "file:Library\\PackageCache\\com.unity.services.cloudcode@2.5.1\\UnityServicesNpmLocal~\\economy-2.0.2.tgz",
@@ -29,7 +29,8 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.14.177",
-    "@types/lodash-4.17": "npm:@types/lodash@^4.14.177"
+    "@types/lodash-4.17": "npm:@types/lodash@^4.14.177",
+    "eslint": "^8.53.0"
   },
   "ccaVersion": "2.5.1"
 }

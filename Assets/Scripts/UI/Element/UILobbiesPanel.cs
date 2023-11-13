@@ -12,6 +12,7 @@ namespace HS4.UI
     {
         [SerializeField] private TextMeshProUGUI _lobbyNameText;
         [SerializeField] private TextMeshProUGUI _playerCountText;
+        [SerializeField] private Slider _slider;
         [SerializeField] private Button _joinBtn;
 
         private Lobby _lobby;
@@ -38,7 +39,8 @@ namespace HS4.UI
             this.gameObject.SetActive(true);
             _lobby = lobby;
             _lobbyNameText.text = lobby.Name + "'s Lobby";
-            _playerCountText.text =  lobby.Players.Count.ToString()+"/" + lobby.MaxPlayers.ToString();
+            _playerCountText.text = $"{lobby.Players.Count.ToString()}<#557190>/{lobby.MaxPlayers.ToString()}";
+            _slider.value = (float)lobby.Players.Count/(float)lobby.MaxPlayers;
         }
 
         
