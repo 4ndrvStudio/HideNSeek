@@ -5137,7 +5137,7 @@ MonoBehaviour:
   player: {fileID: 0}
   lerpFactor: 1
   Radius: 50
-  ZoomDuration: 0
+  ZoomDuration: 2
 --- !u!1 &1052680200
 GameObject:
   m_ObjectHideFlags: 0
