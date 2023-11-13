@@ -4188,9 +4188,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _camera: {fileID: 1242481222}
   _uiGameplay: {fileID: 573060809}
-  _startgamePanel: {fileID: 1320002816}
-  _timeText: {fileID: 615249791}
-  _characterTypeText: {fileID: 326805560}
   _startFindingBtn: {fileID: 1843370817}
   _spawnerPoint:
   - {fileID: 5616374765803601151}

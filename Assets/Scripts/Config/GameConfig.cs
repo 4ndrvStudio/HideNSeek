@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Utilities;
 
-namespace Game.Config
+namespace HS4.Config
 {
     public enum GameParam
     {

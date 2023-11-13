@@ -3,8 +3,6 @@ using UnityEngine;
 using Utilities;
 using Utils;
 
-namespace Game
-{
     public sealed class DoorView : MonoBehaviour
     {
         public Action<Collider> COLLISION;
@@ -80,4 +78,3 @@ namespace Game
             return MathUtil.Sign((position.x - start.x) * (end.z - start.z) - (position.z - start.z) * (end.x - start.x));
         }
     }
-}
