@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using HS4.UI;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -83,6 +84,7 @@ namespace HS4.PlayerCore
 
         public void EnableInput() {
             _isStartGame = true;
+            if(IsOwner) UIController.Instance.Active();
         }
 
         public void SetCanMove(bool isKill) {
@@ -118,7 +120,8 @@ namespace HS4.PlayerCore
                 InputPayload inputPayload = new InputPayload()
                 {
                     Tick = currentTick,
-                    Move = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"))
+                    Move = new Vector2(Input.GetAxis("Horizontal") + UIController.Instance.MoveJoyStick.Horizontal
+                                    , Input.GetAxis("Vertical") + UIController.Instance.MoveJoyStick.Vertical)
                 };
 
                 _clientInputBuffer.Add(inputPayload, bufferIndex);

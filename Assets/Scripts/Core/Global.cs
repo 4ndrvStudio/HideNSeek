@@ -21,6 +21,8 @@ namespace HS4
             {
                 Instance = this;
             }
+
+            Application.targetFrameRate = 60;
          
         }
 

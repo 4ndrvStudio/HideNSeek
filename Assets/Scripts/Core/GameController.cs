@@ -280,6 +280,7 @@ namespace HS4
         [ClientRpc]
         public void ResetUIAndSendResultClientRpc(bool isHiderWin)
         {
+            UIController.Instance.Deactive();
             _uiGameplay.HideInPlayGameUI();
             _gameTimeTweener.Kill();
             bool wincheck = isHiderWin == Player.LocalPlayer.IsHider.Value;
@@ -292,10 +293,11 @@ namespace HS4
         private async void DisplayResultUI(bool winCheck)
         {
             await Task.Delay(2000);
+
             UIManager.Instance.ToggleView(ViewName.Lobby);
             UIManager.Instance.ShowPopup(PopupName.GameResult, new Dictionary<string, object>(){
                     {"result", winCheck}
-                });
+            });
         }
 
 
