@@ -274,7 +274,7 @@ namespace HS4
             {
                 player.Player.Reset();
             }
-
+            
         }
         //UI
         [ClientRpc]
@@ -287,7 +287,6 @@ namespace HS4
                 DisplayResultUI(wincheck);
             else
                 Debug.Log($"You {wincheck}");
-
         }
 
         private async void DisplayResultUI(bool winCheck)

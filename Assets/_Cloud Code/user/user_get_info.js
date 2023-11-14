@@ -1,4 +1,5 @@
-const { DataApi } = require("@unity-services/cloud-save-1.0");
+const _ = require("lodash-4.17");
+const { DataApi } = require("@unity-services/cloud-save-1.3");
 
 const USER_INFO_KEY = ["userName", "level", "exp"];
 
@@ -23,7 +24,11 @@ module.exports = async ({ params, context, logger }) => {
       }
     }
 
-    return data;
+    return {
+      isSuccess: true,
+      message: "",
+      data
+    };;
 
   } catch (error) {
     transformAndThrowCaughtError(error);
@@ -45,18 +50,15 @@ function cloudSaveResponseToObject(getItemsResponse) {
 
 function transformAndThrowCaughtError(error) {
   let result = {
-    status: 0,
+    isSuccess: false,
     message: "",
+    data : null
   };
 
   if (error.response) {
-    result.status = error.response.data.status ? error.response.data.status : 0;
     result.message = error.response.data.detail ? error.response.data.detail : error.response.data;
   } else {
-    result.status = 400;
-    result.message = error.message;
+    result.message = error.message
   }
-  if (result.message == "Cannot read property 'instanceData' of undefined") result.message = "Please try again! can't find your item in server";
-
   throw new Error(JSON.stringify(result));
 }

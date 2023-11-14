@@ -119,6 +119,7 @@ namespace HS4
                 );
 
                 CurrentLobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId, options);
+                //CurrentLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode,options);
                 StartCoroutine(HeartbeatLobbyCoroutine(CurrentLobby.Id, 15));
 
                 string joinCodeKey = CurrentLobby.Data["JoinCodeKey"].Value;

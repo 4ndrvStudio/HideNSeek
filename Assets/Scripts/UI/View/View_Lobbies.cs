@@ -14,117 +14,34 @@ namespace HS4.UI
         Create
     }
     public class View_Lobbies : UIView
-    {
-        [Header("Buttons")]
-        [SerializeField] private Color _activeColor;
-        [SerializeField] private Color _deactiveColor;
-        [SerializeField] private Button _createLobbyBtn;
-        [SerializeField] private Button _joinLobbyBtn;
+    {   
+        [SerializeField] private Button _homeBtn;
 
-        [Header("Contents")]
-        [SerializeField] private GameObject _createContentOb;
-        [SerializeField] private GameObject _joinContentOb;
-
-        [Header("Create Contents")]
-        [SerializeField] private TMP_InputField _lobbyNameInput;
-        [SerializeField] private Button _createBtn;
-        [SerializeField] private GameObject _createBtnText;
-        [SerializeField] private GameObject _createLoadingOb;
-
-        [Header("Join Contents")]
-        [SerializeField] private GameObject _loadingIconOb;
-        [SerializeField] private GameObject _lobbyPanelOb;
-        [SerializeField] private GameObject _lobbyPanelHolder;
-        [SerializeField] private List<GameObject> _lobbyList = new();
-
+        [SerializeField] private List<UITabButton> _lobbiesTabButton = new();
+        [SerializeField] private List<UITab> _lobliesTabList = new();
 
         private void Start()
         {
-            _joinLobbyBtn.onClick.AddListener(() =>
-            {
-                ToggleContent(LobbyContent.Join);
-            });
-            _createLobbyBtn.onClick.AddListener(() =>
-            {
-                ToggleContent(LobbyContent.Create);
-            });
-
-            _createBtn.onClick.AddListener(async () =>
-            {
-                ToggleLoading(true);
-                LobbyPlayerData playerData = new LobbyPlayerData()
-                {
-                    IsHost = true,
-                    DisplayName = "custom",
-                    CharacterType = 1
-                };
-                var createLobbyResult = await LobbyManager.Instance.CreateLobby(_lobbyNameInput.text, 6, playerData, false);
-                if (createLobbyResult.IsSuccess)
-                {
-                    UIManager.Instance.ToggleView(ViewName.Lobby, new Dictionary<string, object>() { { "lobby", createLobbyResult.Data } });
-                    _createLoadingOb.gameObject.SetActive(false);
-                    Hide();
-                }
-                ToggleLoading(false);
-
+            _homeBtn.onClick.AddListener(() => UIManager.Instance.ToggleView(ViewName.Home));
+            
+            _lobbiesTabButton.ForEach(tabButton => {
+                tabButton.Button.onClick.AddListener(() => {
+                    _lobbiesTabButton.ForEach(tabButton => tabButton.Deactive());
+                    _lobliesTabList.ForEach(tab => tab.Deactive());
+                    var targetTab = _lobliesTabList.Find(tab => tab.TabName == tabButton.TabName);
+                    targetTab.Active();
+                    tabButton.Active();
+                });
             });
         }
 
         public override void Show(Dictionary<string, object> customProperties)
         {
             base.Show(customProperties);
-            ToggleContent(LobbyContent.Join);
-            FecthLobbiesData();
+            _lobbiesTabButton[0].Button.onClick.Invoke();
         }
 
-        private void ToggleContent(LobbyContent lobbyContent)
-        {
-            _createContentOb.SetActive(false);
-            _joinContentOb.SetActive(false);
-            _createLobbyBtn.GetComponent<Image>().color = _deactiveColor;
-            _joinLobbyBtn.GetComponent<Image>().color = _deactiveColor;
-
-            switch (lobbyContent)
-            {
-                case LobbyContent.Join:
-                    _joinContentOb.SetActive(true);
-                    _joinLobbyBtn.GetComponent<Image>().color = _activeColor;
-                    FecthLobbiesData();
-                    break;
-                case LobbyContent.Create:
-                    _createContentOb.SetActive(true);
-                    _createLobbyBtn.GetComponent<Image>().color = _activeColor;
-                    ToggleLoading(false);
-                    break;
-
-            }
-        }
-        private void ToggleLoading(bool isLoad)
-        {
-            _createLoadingOb.SetActive(isLoad);
-            _createBtnText.SetActive(!isLoad);
-        }
-
-        private async void FecthLobbiesData()
-        {
-            _loadingIconOb.SetActive(true);
-            _lobbyList.ForEach(item => Destroy(item));
-            _lobbyList.Clear();
-            var lobbiesResult = await LobbyManager.Instance.RetrieveLobbyList();
-            if (lobbiesResult.IsSuccess)
-            {
-                QueryResponse lobbiesRespone = lobbiesResult.Data as QueryResponse;
-                lobbiesRespone.Results.ForEach(lobby =>
-                {
-                    GameObject lobbyPanel = Instantiate(_lobbyPanelOb, _lobbyPanelHolder.transform);
-                    UILobbiesPanel lobbyItemScript = lobbyPanel.GetComponent<UILobbiesPanel>();
-                    lobbyItemScript.Setup(lobby);
-                    _lobbyList.Add(lobbyPanel);
-                });
-            }
-            _loadingIconOb.SetActive(false);
-
-        }
+    
 
 
 

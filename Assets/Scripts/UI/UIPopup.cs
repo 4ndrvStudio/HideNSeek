@@ -8,7 +8,9 @@ namespace HS4.UI
     public enum PopupName
     {
         None,
-        GameResult
+        GameResult,
+        UserInfo,
+        SetName
     }
 
     public class UIPopup : MonoBehaviour

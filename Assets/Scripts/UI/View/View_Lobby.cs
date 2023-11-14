@@ -6,12 +6,16 @@ using UnityEngine;
 using UnityEngine.UI;
 using Unity.Services.Authentication;
 using TMPro;
-using Unity.VisualScripting;
 
 namespace HS4.UI
 {
     public class View_Lobby : UIView
     {
+
+        [Header("Lobby")]
+        [SerializeField] private TextMeshProUGUI _lobbyNameText;
+        [SerializeField] private TextMeshProUGUI _lobbyCodeText;
+
         [Header("Buttons")]
         [SerializeField] private Button _leaveBtn;
         [SerializeField] private Button _readyBtn;
@@ -51,7 +55,6 @@ namespace HS4.UI
                         GameController.Instance.StartGame();
                     _time = 5f;
                     _startCalTime = false;
-
                 }
             }
         }
@@ -63,6 +66,9 @@ namespace HS4.UI
             {
                 Lobby lobby = customProperties["lobby"] as Lobby;
                 _lobby = lobby;
+              
+                _lobbyNameText.text = _lobby.Name + "'s Lobby";
+                _lobbyCodeText.text = "Lobby Code: "+ _lobby.LobbyCode +"<#557190>";
                 //Subscribe Events
                 var eventCallbacks = new LobbyEventCallbacks();
                 eventCallbacks.LobbyChanged += OnLobbyChanged;
@@ -158,14 +164,9 @@ namespace HS4.UI
             {
                 if (i < _lobby.Players.Count)
                 {
-                    if (_lobby.HostId == AuthenticationService.Instance.PlayerId)
-                    {
-                        _lobbyUserList[i].Setup(_lobby.Players[i].Data, _lobby.Id, _lobby.Players[i].Id, true);
-                    }
-                    else
-                    {
-                        _lobbyUserList[i].Setup(_lobby.Players[i].Data);
-                    }
+                  
+                    _lobbyUserList[i].Setup(_lobby.Players[i].Data, _lobby.Id, _lobby.Players[i].Id, _lobby.HostId == AuthenticationService.Instance.PlayerId);
+                  
                     if (bool.Parse(_lobby.Players[i].Data["IsReady"].Value) != true)
                     {
                         allReady = false;

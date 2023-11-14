@@ -20,12 +20,14 @@ namespace HS4.UI
         // Start is called before the first frame update
         void Start()
         {
+            
             _joinBtn.onClick.AddListener( async () => {
                 LobbyPlayerData lobbyPlayerData = new LobbyPlayerData() 
                 {
-                    DisplayName = "Join",
+                    DisplayName = User.Info.UserName,
                     CharacterType = 1
                 };
+           
                 var joinResult = await LobbyManager.Instance.JoinLobby(_lobby.Id,lobbyPlayerData);
               
                 if(joinResult.IsSuccess) {

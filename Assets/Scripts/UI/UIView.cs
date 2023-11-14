@@ -9,7 +9,8 @@ namespace HS4.UI
         None,
         Home,
         Lobbies,
-        Lobby
+        Lobby,
+        Shop
     }
     public class UIView : MonoBehaviour
     {
