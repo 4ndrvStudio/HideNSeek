@@ -87,8 +87,6 @@ namespace HS4
             {
                 NetworkManager.OnClientConnectedCallback += OnClientConnectedCallback;
                 NetworkManager.OnClientDisconnectCallback += OnClientDisconnectCallback;
-
-
             }
 
             if (IsServer && _startFindingBtn != null)
@@ -280,9 +278,11 @@ namespace HS4
         [ClientRpc]
         public void ResetUIAndSendResultClientRpc(bool isHiderWin)
         {
+            Player.LocalPlayer.PlayerMovement.ResetPlayer();
             UIController.Instance.Deactive();
             _uiGameplay.HideInPlayGameUI();
             _gameTimeTweener.Kill();
+           
             bool wincheck = isHiderWin == Player.LocalPlayer.IsHider.Value;
             if (UIManager.Instance != null)
                 DisplayResultUI(wincheck);
@@ -293,7 +293,6 @@ namespace HS4
         private async void DisplayResultUI(bool winCheck)
         {
             await Task.Delay(2000);
-
             UIManager.Instance.ToggleView(ViewName.Lobby);
             UIManager.Instance.ShowPopup(PopupName.GameResult, new Dictionary<string, object>(){
                     {"result", winCheck}

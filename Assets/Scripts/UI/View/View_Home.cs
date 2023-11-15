@@ -26,6 +26,7 @@ namespace HS4.UI
 
             _playBtn.onClick.AddListener(() => UIManager.Instance.ToggleView(ViewName.Lobbies));
             _userInfoBtn.onClick.AddListener(() => UIManager.Instance.ShowPopup(PopupName.UserInfo));
+            _settingBtn.onClick.AddListener(() => UIManager.Instance.ShowPopup(PopupName.Settings));
            // _shopBtn.onClick.AddListener(() => UIManager.Instance.ToggleView(ViewName.Shop));
         }
 

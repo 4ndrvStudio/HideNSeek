@@ -10,7 +10,9 @@ namespace HS4.UI
         None,
         GameResult,
         UserInfo,
-        SetName
+        SetName,
+        Settings,
+        EnterLobby
     }
 
     public class UIPopup : MonoBehaviour

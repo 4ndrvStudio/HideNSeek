@@ -14,8 +14,11 @@ namespace HS4.UI
         [SerializeField] private TextMeshProUGUI _playerCountText;
         [SerializeField] private Slider _slider;
         [SerializeField] private Button _joinBtn;
+        [SerializeField] private Image _lockIcon;
+        [SerializeField] private Color _lockNormalColor;
 
-        private Lobby _lobby;
+
+        public Lobby Lobby;
 
         // Start is called before the first frame update
         void Start()
@@ -28,7 +31,7 @@ namespace HS4.UI
                     CharacterType = 1
                 };
            
-                var joinResult = await LobbyManager.Instance.JoinLobby(_lobby.Id,lobbyPlayerData);
+                var joinResult = await LobbyManager.Instance.JoinLobby(Lobby.Id,lobbyPlayerData);
               
                 if(joinResult.IsSuccess) {
                     UIManager.Instance.ToggleView(ViewName.Lobby, 
@@ -39,7 +42,8 @@ namespace HS4.UI
 
         public void Setup(Lobby lobby) {
             this.gameObject.SetActive(true);
-            _lobby = lobby;
+            Lobby = lobby;
+            _lockIcon.color = Lobby.IsLocked ? Color.white: _lockNormalColor;
             _lobbyNameText.text = lobby.Name + "'s Lobby";
             _playerCountText.text = $"{lobby.Players.Count.ToString()}<#557190>/{lobby.MaxPlayers.ToString()}";
             _slider.value = (float)lobby.Players.Count/(float)lobby.MaxPlayers;

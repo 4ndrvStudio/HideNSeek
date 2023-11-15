@@ -23,7 +23,6 @@ namespace HS4.UI
         }
         public override void Deactive()
         {
-            Debug.Log("call");
             _tabFocusIcon.SetActive(false);
             _tabIcon.color = _normalColor;
             _tabNameText.color = _normalColor;

@@ -13,11 +13,7 @@ namespace HS4.UI
     public abstract class UITabButton : MonoBehaviour
     {   
         public UITabName TabName;
-        [HideInInspector] public Button Button;
-
-        public void Awake() {
-            Button = GetComponent<Button>();
-        }
+        public Button Button;
 
         public virtual void Active() {}
         public virtual void Deactive() {}

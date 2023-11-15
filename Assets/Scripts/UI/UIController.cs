@@ -18,7 +18,12 @@ namespace HS4.UI
         }
 
         public void Active() => _controller.SetActive(true);
-        public void Deactive() => _controller.SetActive(false);
+        public void Deactive(){
+            
+            MoveJoyStick.input.x = 0;
+            MoveJoyStick.input.y = 0;
+            _controller.SetActive(false);
+        } 
 
 
      

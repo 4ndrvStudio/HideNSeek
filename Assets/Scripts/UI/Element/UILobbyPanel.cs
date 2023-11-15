@@ -34,7 +34,7 @@ namespace HS4.UI
         public void Setup(Dictionary<string, PlayerDataObject> playerData,string lobbyId = null, string playerId = null,bool canKick = false) {
             _canvasGroup.alpha =1;
             _nameText.text = playerData["DisplayName"].Value;
-            _readyText.text = playerData["IsReady"].Value;
+            _readyText.text = bool.Parse(playerData["IsReady"].Value) ? "Ready" : "Not Ready";
             bool isHost = bool.Parse(playerData["IsHost"].Value);
             _hostIcon.SetActive(isHost);
             _kickPlayerBtn.gameObject.SetActive(!isHost && canKick);

@@ -20,7 +20,7 @@ namespace HS4.UI
         [SerializeField] private List<UITabButton> _lobbiesTabButton = new();
         [SerializeField] private List<UITab> _lobliesTabList = new();
 
-        private void Start()
+        private void Awake()
         {
             _homeBtn.onClick.AddListener(() => UIManager.Instance.ToggleView(ViewName.Home));
             

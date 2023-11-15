@@ -27,9 +27,18 @@ namespace HS4.UI
         public override async void Show(Dictionary<string, object> customProperties = null)
         {
             base.Show(customProperties);
-
+            
+            Setup();
+            
             await User.GetUserInfo();
-            _userIdText.text  = "#"+AuthenticationService.Instance.PlayerId.Substring(0,7);
+
+           Setup();
+            
+            
+        }
+
+        private void Setup() {
+              _userIdText.text  = "#"+AuthenticationService.Instance.PlayerId.Substring(0,7);
             _nameText.text =  User.Info.UserName;
             _levelAvatarText.text = User.Info.Level.ToString();
             _levelText.text = $"LV <#94aed0><size=170%>{User.Info.Level.ToString()}";

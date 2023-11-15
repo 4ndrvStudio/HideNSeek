@@ -50,11 +50,7 @@ namespace HS4.UI
                 _timeText.text = $"The game will start in : {_time.ToString("#")}";
                 if (_time <= 0)
                 {
-                    Hide();
-                    if (GameController.Instance != null)
-                        GameController.Instance.StartGame();
-                    _time = 5f;
-                    _startCalTime = false;
+                    StartGame();
                 }
             }
         }
@@ -66,9 +62,9 @@ namespace HS4.UI
             {
                 Lobby lobby = customProperties["lobby"] as Lobby;
                 _lobby = lobby;
-              
+
                 _lobbyNameText.text = _lobby.Name + "'s Lobby";
-                _lobbyCodeText.text = "Lobby Code: "+ _lobby.LobbyCode +"<#557190>";
+                _lobbyCodeText.text = "Lobby Code: " + _lobby.LobbyCode + "<#557190>";
                 //Subscribe Events
                 var eventCallbacks = new LobbyEventCallbacks();
                 eventCallbacks.LobbyChanged += OnLobbyChanged;
@@ -81,16 +77,45 @@ namespace HS4.UI
 
             _time = 5f;
             _startCalTime = false;
-
+            BlockLobby(false);
             FetchData();
-
-
         }
 
         public override void Hide()
         {
             this._lobbyEvents = null;
             base.Hide();
+        }
+
+        private void StartGame()
+        {
+            Hide();
+
+            BlockLobby(true);
+            if (GameController.Instance != null)
+                GameController.Instance.StartGame();
+            _time = 5f;
+            _startCalTime = false;
+        }
+
+        private async void BlockLobby(bool isBlock)
+        {
+            try
+            {
+                string playerId = AuthenticationService.Instance.PlayerId;
+                if (playerId == _lobby.HostId)
+                {
+                    UpdateLobbyOptions updateLobbyOptions = new UpdateLobbyOptions();
+                    updateLobbyOptions.IsLocked = isBlock;
+                    await LobbyService.Instance.UpdateLobbyAsync(_lobby.Id, updateLobbyOptions);
+                }
+            }
+            catch (LobbyServiceException e)
+            {
+                Debug.Log(e);
+            }
+
+
         }
 
         private void OnLobbyChanged(ILobbyChanges changes)
@@ -105,10 +130,7 @@ namespace HS4.UI
                     LobbyManager.Instance.LeaveLobby();
                     UIManager.Instance.ToggleView(ViewName.Lobbies);
                 }
-
                 return;
-
-
             }
             else
             {
@@ -164,9 +186,9 @@ namespace HS4.UI
             {
                 if (i < _lobby.Players.Count)
                 {
-                  
+
                     _lobbyUserList[i].Setup(_lobby.Players[i].Data, _lobby.Id, _lobby.Players[i].Id, _lobby.HostId == AuthenticationService.Instance.PlayerId);
-                  
+
                     if (bool.Parse(_lobby.Players[i].Data["IsReady"].Value) != true)
                     {
                         allReady = false;

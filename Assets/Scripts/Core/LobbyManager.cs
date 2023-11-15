@@ -72,6 +72,7 @@ namespace HS4
                 RelayHostData relayHostData = await RelayManager.Instance.SetupHost(maxPlayers);
 
                 CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions();
+                createLobbyOptions.IsPrivate = isPrivate;
 
                 createLobbyOptions.Data = new Dictionary<string, DataObject> {
                 { "JoinCodeKey", new DataObject(DataObject.VisibilityOptions.Public, relayHostData.JoinCode) }
@@ -86,7 +87,7 @@ namespace HS4
 
                 StartCoroutine(LoadGamePlayScene(true));
 
-                StartCoroutine(HeartbeatLobbyCoroutine(CurrentLobby.Id, 15));
+                StartCoroutine(HeartbeatLobbyCoroutine(CurrentLobby.Id, 3));
 
                 return new LobbyResult
                 {
@@ -106,11 +107,51 @@ namespace HS4
 
         }
 
+        public async Task<LobbyResult> QuickJoinLobby(string lobbyCode, LobbyPlayerData playerData)
+        {
+            try
+            {
+
+                JoinLobbyByCodeOptions options = new JoinLobbyByCodeOptions();
+
+                options.Player = new Player(
+                        id: AuthenticationService.Instance.PlayerId,
+                        data: CreateInitialPlayerData(playerData)
+                );
+
+                CurrentLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode,options);
+                StartCoroutine(HeartbeatLobbyCoroutine(CurrentLobby.Id, 15));
+
+                string joinCodeKey = CurrentLobby.Data["JoinCodeKey"].Value;
+                await RelayManager.Instance.JoinRelay(joinCodeKey);
+
+                StartCoroutine(LoadGamePlayScene(false));
+
+                return new LobbyResult
+                {
+                    IsSuccess = true,
+                    Data = CurrentLobby
+                };
+
+            }
+            catch (LobbyServiceException e)
+            {
+                Debug.Log(e.Message);
+                return new LobbyResult
+                {
+                    IsSuccess = false,
+                    Message = e.Message
+                };
+            }
+        }
+
+        
 
         public async Task<LobbyResult> JoinLobby(string lobbyId, LobbyPlayerData playerData)
         {
             try
             {
+
                 JoinLobbyByIdOptions options = new JoinLobbyByIdOptions();
 
                 options.Player = new Player(
@@ -136,6 +177,7 @@ namespace HS4
             }
             catch (LobbyServiceException e)
             {
+                Debug.Log(e.Message);
                 return new LobbyResult
                 {
                     IsSuccess = false,
