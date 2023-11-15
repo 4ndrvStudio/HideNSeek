@@ -29,6 +29,7 @@ namespace HS4.PlayerCore
                 if(LocalPlayer == null) {
                     LocalPlayer =this;
                 }
+                Debug.Log(this.gameObject.name);
             }
             IsHider.OnValueChanged += OnHiderStateChange;
             IsKill.OnValueChanged += OnIsKillStateChange;
@@ -107,7 +108,7 @@ namespace HS4.PlayerCore
         private void SetupCharacterType() 
         {
            PlayerView.SetCharacterType(IsHider.Value);
-         
+            
            if(IsHider.Value)  
                 gameObject.layer =  LayerMask.NameToLayer("Victim");
             else 
