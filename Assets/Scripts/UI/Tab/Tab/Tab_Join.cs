@@ -15,6 +15,7 @@ namespace HS4.UI
         [SerializeField] private GameObject _lobbyPanelOb;
         [SerializeField] private GameObject _lobbyPanelHolder;
         [SerializeField] private List<GameObject> _lobbyList = new();
+        [SerializeField] private GameObject _noRoomsNotify;
 
         [Header("Buttons")]
         [SerializeField] private Button _refreshBtn;
@@ -104,7 +105,6 @@ namespace HS4.UI
                     Destroy(itemToRemove);
                 }
 
-                //add or modify item
                 lobbiesRespone.Results.ForEach(lobby =>
                 {
                     int index = _lobbyList.FindIndex(item => item.GetComponent<UILobbiesPanel>().Lobby.Id == lobby.Id);
@@ -121,9 +121,9 @@ namespace HS4.UI
                     }
                 });
 
-
-
-
+                //check found a lobby {}
+                _noRoomsNotify.SetActive(_lobbyList.Count > 0 ? false: true);
+                
             }
         }
 
