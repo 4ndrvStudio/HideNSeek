@@ -21,6 +21,11 @@ namespace HS4.UI
         public int Level;
         public int Exp;
     }
+
+    public class Characters {
+        public string Id;
+        public bool Status;
+    }
  
 
     public static class User
@@ -80,9 +85,6 @@ namespace HS4.UI
             Debug.Log(result.Message);
             return  result;
         }
-
-
-
 
     }
 

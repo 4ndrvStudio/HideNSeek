@@ -1,0 +1,99 @@
+{
+  "box": [
+      {
+          "packId": "free_box_pack",
+          "price": 0,
+          "rewardItem": [
+              "ITEM_SKIN1",
+              "ITEM_ABILITY1",
+              "GOLD"
+          ]
+      },
+      {
+          "packId": "normal_box_pack",
+          "price": 15,
+          "rewardItem": [
+              "ITEM_SKIN1",
+              "ITEM_ABILITY1",
+              "ITEM_ABILITY2",
+              "ITEM_ABILITY3",
+              "GOLD"
+          ]
+      },
+      {
+          "packId": "great_box_pack",
+          "price": 45,
+          "rewardItem": [
+              "ITEM_SKIN1",
+              "ITEM_ABILITY4"
+          ]
+      }
+  ],
+  "gold": [
+      {
+          "packId": "gold_pack_1",
+          "amount": 1000,
+          "price": 30
+      },
+      {
+          "packId": "gold_pack_2",
+          "amount": 3000,
+          "price": 80
+      },
+      {
+          "packId": "gold_pack_3",
+          "amount": 9000,
+          "price": 210
+      }
+  ],
+  "gem": [
+      {
+          "packId": "gem_pack_1",
+          "amount": 30,
+          "price": {
+              "EN": 0.99,
+              "VI": 24000
+          }
+      },
+      {
+          "packId": "gem_pack_2",
+          "amount": 80,
+          "price": {
+              "EN": 1.99,
+              "VI": 48000
+          }
+      },
+      {
+          "packId": "gem_pack_3",
+          "amount": 170,
+          "price": {
+              "EN": 3.99,
+              "VI": 96000
+          }
+      },
+      {
+          "packId": "gem_pack_4",
+          "amount": 360,
+          "price": {
+              "EN": 7.99,
+              "VI": 192000
+          }
+      },
+      {
+          "packId": "gem_pack_5",
+          "amount": 950,
+          "price": {
+              "EN": 19.99,
+              "VI": 480000
+          }
+      },
+      {
+        "packId": "gem_pack_6",
+        "amount": 2000,
+        "price": {
+            "EN": 39.99,
+            "VI": 960000
+        }
+    }
+  ]
+}
