@@ -11,9 +11,14 @@ namespace HS4.UI
         async void Start()
         {
             while(true) {
+
                 bool isSignedIn =  await User.SignInAnonymouslyAsync();
-                if(isSignedIn)
+
+                if(isSignedIn) {
+                    User.Setup();
                     break;
+                }
+                 
             }
             await Task.Delay(2000);
             UIManager.Instance.ToggleView(ViewName.Home);

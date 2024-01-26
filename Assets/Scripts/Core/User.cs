@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Unity.Services.CloudCode;
 using Newtonsoft.Json;
 
-namespace HS4.UI
+namespace HS4
 {
     public struct ApiName {
         public static string User_Get_Info = "user_get_info";
@@ -21,16 +21,22 @@ namespace HS4.UI
         public int Level;
         public int Exp;
     }
+    
+    public class Prices {
+        public int Gold;
+        public int Gem;
+    }
 
     public class Characters {
         public string Id;
-        public bool Status;
+        public bool Unlocked;
+        public Prices Prices;
     }
- 
 
     public static class User
     {
         public static UserInfo Info;
+        //public static CharacterConfig Characters;
 
         public static async Task<bool> SignInAnonymouslyAsync()
         {
@@ -46,9 +52,11 @@ namespace HS4.UI
 
             Debug.Log("Sign Success: " + AuthenticationService.Instance.PlayerId);
             return AuthenticationService.Instance.IsSignedIn;
-
-
         }
+        public static void Setup() {
+            //Characters = Resources.Load("Config/Characters")
+        }
+
         public static async Task<CloudCodeResult> CallApi(string apiName, Dictionary<string, object> paramsHandle = null)
         {
             try
