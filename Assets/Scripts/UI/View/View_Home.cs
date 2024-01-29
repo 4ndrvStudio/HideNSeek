@@ -25,7 +25,17 @@ namespace HS4.UI
 
         [Header("CharacterView")]
         [SerializeField] private UISelectCharacter _uiSelectCharacter;
+        [SerializeField] private GameObject _loadingSpiner;
 
+        private bool _isLoading
+        {
+            set
+            {
+                _uiSelectCharacter.gameObject.SetActive(!value);
+                _loadingSpiner.gameObject.SetActive(value);
+
+            }
+        }
         // Start is called before the first frame update
         void Start()
         {
@@ -38,9 +48,13 @@ namespace HS4.UI
         public override async void Show(Dictionary<string, object> customProperties = null)
         {
             base.Show(customProperties);
+            
+   
 
             await User.GetUserInfo();
-            StartCoroutine(LoadCharacterScene());
+            var scene = SceneManager.GetSceneByName(Config.SceneName.Character);
+            if (!scene.isLoaded)
+                StartCoroutine(LoadCharacterScene());
 
             if(User.Info.UserName == null) {
                 var popupParams = new Dictionary<string, object>() {{"isRequire", true}};
@@ -58,23 +72,33 @@ namespace HS4.UI
         public override void Hide()
         {
             base.Hide();
-            var scene = SceneManager.GetSceneByName(Config.SceneName.Character);
+            _uiSelectCharacter.Deactive();
 
+            var scene = SceneManager.GetSceneByName(Config.SceneName.Character);
             if(scene.isLoaded)
                 SceneManager.UnloadSceneAsync(Config.SceneName.Character);
         }
 
         IEnumerator LoadCharacterScene()
         {
-                
-             AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(Config.SceneName.Character, LoadSceneMode.Additive);
 
-                while (!asyncLoad.isDone)
+            _isLoading = true;
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(Config.SceneName.Character, LoadSceneMode.Additive);
+
+            while (!asyncLoad.isDone)
                 {
                     yield return null;
                 }
+            _loadingSpiner.SetActive(false);
 
-            _uiSelectCharacter.SelectCharacterCamera = CharacterManager.Instance.SelectCharacterCamera;
+            while (!CharacterManager.Instance.IsCompleteSetup)
+            {
+                yield return null;
+            }
+
+            _isLoading = false;
+
+            _uiSelectCharacter.Active(CharacterManager.Instance.SelectCharacterCamera); 
 
 
         }

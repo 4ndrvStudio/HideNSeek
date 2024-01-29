@@ -11,6 +11,7 @@ namespace HS4
     public class CharacterManager : Singleton<CharacterManager>
     {
         public Camera SelectCharacterCamera;
+        public bool IsCompleteSetup;
 
         [SerializeField] private GameObject _characterContainer;
         [SerializeField] private List<Backend.Character> _characterOwnedList = new();
@@ -32,7 +33,7 @@ namespace HS4
 
             var _characterConfigs = ConfigManager.Instance.CharacterConfigs;
 
-            for (int i= 0; i< _characterConfigs.Count; i++)
+            for (int i = 0; i < _characterConfigs.Count; i++)
             {
                 bool hasOwn = _characterOwnedList.Any(itemCharacter => itemCharacter.InventoryItemId == _characterConfigs[i].Id.ToUpper());
                 var characterOb = Instantiate(_characterConfigs[i].Prefab, _characterContainer.transform);
@@ -46,7 +47,15 @@ namespace HS4
                     );
                 CharacterSpawnedList.Add(characterData);
             }
+
+            IsCompleteSetup = true;
         }
+
+        public CharacterData GetCharacter(string id) {
+
+            int index = CharacterSpawnedList.FindIndex(item => item.Id == id);
+            return CharacterSpawnedList[index];
+         }
 
         public void ClearData()
         {
