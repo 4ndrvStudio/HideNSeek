@@ -2,17 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace HS4
+namespace HS4.Config
 {
-    [CreateAssetMenu(fileName = "Character Settings", menuName = "Data/Character Settings")]
+    [CreateAssetMenu(fileName = "Character Config", menuName = "Data/Character Config")]
     public class CharacterConfig : ScriptableObject
     {
-        public List<Characters> Characters;
-
-        public Prices GetCharacterPrices(string id)  {
-            var character = Characters.Find(item=> item.Id == id);
-            return character.Prices;
-        } 
+        public string Id;
+        public GameObject Prefab;
     }
 
 }

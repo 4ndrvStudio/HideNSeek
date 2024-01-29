@@ -10,9 +10,20 @@ using Newtonsoft.Json;
 
 namespace HS4
 {
-    public struct ApiName {
+    #region Model
+    public struct ApiName
+    {
+        //get
         public static string User_Get_Info = "user_get_info";
+        public static string User_Get_Balance = "user_get_currency";
+        public static string User_Get_Characters = "user_get_characters";
+
+        //set
         public static string User_Set_Name = "user_set_name";
+
+        //buy
+        public static string Buy_Gold = "buy_gold";
+        public static string Buy_Gem = "add_gem";
     }
 
     public class UserInfo
@@ -21,22 +32,36 @@ namespace HS4
         public int Level;
         public int Exp;
     }
+
+    public class Balance
+    {
+        public int Gold;
+        public int Gem;
+        public int Energy;
+    }
     
     public class Prices {
         public int Gold;
         public int Gem;
     }
 
-    public class Characters {
-        public string Id;
-        public bool Unlocked;
-        public Prices Prices;
+    namespace Backend
+    {
+        public class Character
+        {
+            [JsonProperty("playersInventoryItemId")]
+            public string Id;
+            [JsonProperty("inventoryItemId")]
+            public string InventoryItemId;
+        }
     }
+
+    #endregion
 
     public static class User
     {
         public static UserInfo Info;
-        //public static CharacterConfig Characters;
+        public static Balance Balance;
 
         public static async Task<bool> SignInAnonymouslyAsync()
         {
@@ -53,8 +78,10 @@ namespace HS4
             Debug.Log("Sign Success: " + AuthenticationService.Instance.PlayerId);
             return AuthenticationService.Instance.IsSignedIn;
         }
-        public static void Setup() {
-            //Characters = Resources.Load("Config/Characters")
+        public static async Task Setup()
+        {
+            await GetUserInfo();
+            await GetBalance();
         }
 
         public static async Task<CloudCodeResult> CallApi(string apiName, Dictionary<string, object> paramsHandle = null)
@@ -84,6 +111,19 @@ namespace HS4
             }
             return result;
         }
+        public static async Task<CloudCodeResult> GetBalance()
+        {
+            var result = await CallApi(ApiName.User_Get_Balance);
+            if(result.IsSuccess)
+            {
+                Balance = JsonConvert.DeserializeObject<Balance>(result.Data.ToString());
+                Debug.Log(result.Data);
+            } else
+            {
+                Debug.Log(result.Message);
+            }
+            return result;
+        }
 
         public static async Task<CloudCodeResult> SetName(string name) 
         {
@@ -92,6 +132,30 @@ namespace HS4
             var result = await CallApi(ApiName.User_Set_Name,handleParams);
             Debug.Log(result.Message);
             return  result;
+        }
+
+        public static async Task<CloudCodeResult> GetCharacters()
+        {
+            var result = await CallApi(ApiName.User_Get_Characters);
+
+            return result;
+        }
+
+        public static async Task<CloudCodeResult> Buy_Gem()
+        {
+            var result = await CallApi(ApiName.Buy_Gem);
+           
+            return result;
+        }
+
+        public static async Task<CloudCodeResult> Buy_Gold(string bundlePackId)
+        {
+            var result = await CallApi(ApiName.Buy_Gold, new Dictionary<string, object>
+            {
+                {"bundlePackId",bundlePackId}
+            });
+
+            return result;
         }
 
     }

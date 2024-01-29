@@ -12,6 +12,8 @@ namespace HS4.UI
         [SerializeField] private List<UIView> _listView = new List<UIView>();
         [SerializeField] private List<UIPopup> _listPopup = new List<UIPopup>();
 
+        public UIView CurrentView;
+
         void Awake()
         {
             if (Instance == null)
@@ -37,6 +39,7 @@ namespace HS4.UI
             {
                 _listView.ForEach(view => view.Hide());
                 selectedPanel.Show(customProperties);
+                CurrentView = selectedPanel;
             }
         }
     }

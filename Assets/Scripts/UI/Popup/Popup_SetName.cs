@@ -29,6 +29,7 @@ namespace HS4.UI
         public override void Show(Dictionary<string, object> customProperties = null)
         {
             base.Show(customProperties);
+            
             _isRequire = bool.Parse(customProperties["isRequire"].ToString());
             _closeBtn.gameObject.SetActive(!_isRequire);
             _notifyText.gameObject.SetActive(false);

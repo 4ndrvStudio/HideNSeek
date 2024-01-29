@@ -15,7 +15,7 @@ module.exports = async ({ params, context, logger }) => {
     return {
       isSuccess : true,
       message: "Get user characters complete!",
-      data : items
+      data: items.filter(item => item.instanceData && item.instanceData.type === "character")
     }
     
   } catch (err) {
@@ -23,16 +23,6 @@ module.exports = async ({ params, context, logger }) => {
   }
 
 };
-
-function currenyResponseToObject(currencyResponse) {
-  let returnObject = {};
-  currencyResponse.data.results.forEach(item => {
-    const key = _.camelCase(item.currencyId);
-    returnObject[key] = item.balance;
-  });
-
-  return returnObject;
-}
 
 function transformAndThrowCaughtError(error) {
    let result = {

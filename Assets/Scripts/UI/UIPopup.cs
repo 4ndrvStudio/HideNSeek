@@ -12,7 +12,9 @@ namespace HS4.UI
         UserInfo,
         SetName,
         Settings,
-        EnterLobby
+        EnterLobby,
+        Reward,
+        Notify
     }
 
     public class UIPopup : MonoBehaviour

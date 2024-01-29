@@ -16,43 +16,44 @@ module.exports = async ({ params, context, logger }) => {
 
     //get config
     const configType = "settings";
-    const key = ["BundlePackConfig"];
+    const key = ["bundlePackConfig"];
     const settingConfigRespone = await settingApi.assignSettingsGet(projectId, environmentId, configType, key);
-    const bundlePackConfig = settingConfigRespone.data.configs.settings["BundlePackConfig"];
+    const bundlePackConfig = settingConfigRespone.data.configs.settings["bundlePackConfig"];
     const pack = bundlePackConfig.gold.find(pack => pack.packId == params.bundlePackId);
    
-    //Validate State
-    if(currentGem < pack.price) throw new Error("Your not enough GEM");
+     //Validate State
+      if (currentGem.balance < pack.price) {
+          throw new Error("Your not enough GEM");
+      }
+      else {
+          //request to update 
+          const goldRequest = {
+              currencyId: "GOLD",
+              currencyModifyBalanceRequest: {
+                  amount: pack.amount
+              },
+              playerId,
+              projectId
+          }
+          const gemRequest = {
+              currencyId: "GEM",
+              currencyModifyBalanceRequest: {
+                  amount: pack.price
+              },
+              playerId,
+              projectId
+          }
 
 
-    //request to update 
-    const goldRequest = {
-      currencyId: "GOLD",
-      currencyModifyBalanceRequest: {
-        amount: pack.amount
-      },
-      playerId,
-      projectId
-    }
-    const gemRequest = {
-      currencyId: "GEM",
-      currencyModifyBalanceRequest: {
-        amount: pack.price
-      },
-      playerId,
-      projectId
-    }
+          let currencyResult = await currencyApi.incrementPlayerCurrencyBalance(goldRequest);
+          let minusGem = await currencyApi.decrementPlayerCurrencyBalance(gemRequest);
 
-
-    let currencyResult = await currencyApi.incrementPlayerCurrencyBalance(goldRequest);
-    let minusGem  = await currencyApi.decrementPlayerCurrencyBalance(gemRequest);
-
-    return {
-      isSuccess : true,
-      message: `You claim ${pack.amount} Gold`,
-      data: pack.amount
-    }
-
+          return {
+              isSuccess: true,
+              message: `You claim ${pack.amount} Gold`,
+              data: pack.amount
+          }
+      }
 
   } catch (err) {
     transformAndThrowCaughtError(err);

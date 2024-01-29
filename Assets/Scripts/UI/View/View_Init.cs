@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using HS4.Config;
 
 namespace HS4.UI
 {
@@ -15,12 +16,13 @@ namespace HS4.UI
                 bool isSignedIn =  await User.SignInAnonymouslyAsync();
 
                 if(isSignedIn) {
-                    User.Setup();
+                    await User.Setup();
+                    ConfigManager.Instance.Init();
                     break;
                 }
                  
             }
-            await Task.Delay(2000);
+            await Task.Delay(1000);
             UIManager.Instance.ToggleView(ViewName.Home);
            
                 

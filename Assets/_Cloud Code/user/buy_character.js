@@ -1,49 +1,84 @@
-/*
- *  -------- Example Cloud Code Script --------
- *
- *  Roll a 6-sided dice and get back the result
- *
- * --------------------------------------------
- * Additional imports are limited to:
- *  - lodash-4.17
- *  - axios-0.21
- *  - @unity-services/cloud-save-1.0
- *  - @unity-services/economy-2.0
- *  - @unity-services/remote-config-1.0
- */
- // Include the lodash module for convenient functions such as "random"
-const _ = require("lodash-4.17");
+const { CurrenciesApi, InventoryApi } = require("@unity-services/economy-2.4");
+const { SettingsApi } = require("@unity-services/remote-config-1.0");
 
-const NUMBER_OF_SIDES = 6;
-
-/*
- * CommonJS wrapper for the script. It receives a single argument, which can be destructured into:
- *  - params: Object containing the parameters provided to the script, accessible as object properties
- *  - context: Object containing the projectId, environmentId, environmentName, playerId and accessToken properties.
- *  - logger: Logging client for the script. Provides debug(), info(), warning() and error() log levels.
- */
 module.exports = async ({ params, context, logger }) => {
-  // Log an info message with the parameters provided to the script and the invocation context
-  logger.info("Script parameters: " + JSON.stringify(params));
-  logger.info("Authenticated within the following context: " + JSON.stringify(context));
 
-  const roll = rollDice(NUMBER_OF_SIDES);
+    try {
+        const { projectId, playerId, accessToken, environmentId } = context;
+        const currencyApi = new CurrenciesApi({ accessToken });
+        const inventoryApi = new InventoryApi({ accessToken });
+        const settingApi = new SettingsApi({ accessToken });
 
-  if (roll > NUMBER_OF_SIDES) {
-    // Log an error message with information about the exception
-    logger.error("The roll is greater than the number of sides: " + roll);
-    // Return an error back to the client
-    throw Error("Unable to roll dice!");
-  }
+        const currencyRequest = { projectId, playerId };
+        const currencyRespone = await currencyApi.getPlayerCurrencies(currencyRequest);
 
-  // Return the JSON result to the client
-  return {
-    sides: NUMBER_OF_SIDES,
-    roll: roll,
-  };
+        //get current gold
+        const currentGold = currencyRespone.data.results.find(currency => currency.currencyId == "GOLD");
+
+        //get config
+        const configType = "settings";
+        const key = ["bundlePackConfig"];
+        const settingConfigRespone = await settingApi.assignSettingsGet(projectId, environmentId, configType, key);
+        const bundlePackConfig = settingConfigRespone.data.configs.settings["bundlePackConfig"];
+        const characterPack = bundlePackConfig.character.find(character => character.id == params.characterId);
+
+        //Validate State
+        if (currentGold < characterPack.price) throw new Error("Your not enough Gold");
+
+
+        //character
+        const addInventoryRequest = {
+            addInventoryRequest: {
+                instanceData: {
+                    type: "character"
+                },
+                inventoryItemId: params.characterId.toUpperCase(),
+            },
+            playerId,
+            projectId,
+        };
+
+        const addInventoryResponse = await inventoryApi.addInventoryItem(addInventoryRequest);
+
+        //request update gold 
+        const goldRequest = {
+            currencyId: "GOLD",
+            currencyModifyBalanceRequest: {
+                amount: characterPack.price
+            },
+            playerId,
+            projectId
+        }
+
+        let currencyResult = await currencyApi.decrementPlayerCurrencyBalance(goldRequest);
+
+
+        return {
+            isSuccess: true,
+            message: `Purchased successfully.`,
+            data: null
+        }
+
+
+    } catch (err) {
+        transformAndThrowCaughtError(err);
+    }
+
+
 };
 
-// Functions can exist outside of the script wrapper
-function rollDice(sides) {
-  return _.random(1, sides);
+function transformAndThrowCaughtError(error) {
+    let result = {
+        isSuccess: false,
+        message: "",
+        data: null
+    };
+
+    if (error.response) {
+        result.message = error.response.data.detail ? error.response.data.detail.replace('currency', 'Gold') : error.response.data;
+    } else {
+        result.message = error.message;
+    }
+
+    throw new Error(JSON.stringify(result));
 }

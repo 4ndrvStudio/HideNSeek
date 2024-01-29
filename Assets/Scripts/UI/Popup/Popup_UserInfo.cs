@@ -21,7 +21,10 @@ namespace HS4.UI
 
         private void Start() {
             _closeBtn.onClick.AddListener(Hide);
-            _editNameBtn.onClick.AddListener(() => UIManager.Instance.ShowPopup(PopupName.SetName));
+
+            _editNameBtn.onClick.AddListener(() => UIManager.Instance.ShowPopup(PopupName.SetName,
+                new Dictionary<string, object> { { "isRequire", false} }
+                ));
         }
 
         public override async void Show(Dictionary<string, object> customProperties = null)
@@ -32,13 +35,13 @@ namespace HS4.UI
             
             await User.GetUserInfo();
 
-           Setup();
+            Setup();
             
             
         }
 
         private void Setup() {
-              _userIdText.text  = "#"+AuthenticationService.Instance.PlayerId.Substring(0,7);
+            _userIdText.text  = "#"+AuthenticationService.Instance.PlayerId.Substring(0,7);
             _nameText.text =  User.Info.UserName;
             _levelAvatarText.text = User.Info.Level.ToString();
             _levelText.text = $"LV <#94aed0><size=170%>{User.Info.Level.ToString()}";
