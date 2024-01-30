@@ -23,8 +23,7 @@ module.exports = async ({ params, context, logger }) => {
         const characterPack = bundlePackConfig.character.find(character => character.id == params.characterId);
 
         //Validate State
-        if (currentGold < characterPack.price) throw new Error("Your not enough Gold");
-
+        if (currentGold.balance < characterPack.price) throw new Error("Your not enough Gold");
 
         //character
         const addInventoryRequest = {

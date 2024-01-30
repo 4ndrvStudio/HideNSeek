@@ -17,13 +17,18 @@ namespace HS4
         public static string User_Get_Info = "user_get_info";
         public static string User_Get_Balance = "user_get_currency";
         public static string User_Get_Characters = "user_get_characters";
+        public static string User_Get_Character_In_Use = "user_get_character_in_use";
 
         //set
+        public static string User_Setup = "user_setup";
         public static string User_Set_Name = "user_set_name";
+        public static string User_Select_Character = "user_select_character";
 
         //buy
         public static string Buy_Gold = "buy_gold";
         public static string Buy_Gem = "add_gem";
+        public static string Buy_Character = "buy_character";
+
     }
 
     public class UserInfo
@@ -80,6 +85,7 @@ namespace HS4
         }
         public static async Task Setup()
         {
+            await SetupDatabase();
             await GetUserInfo();
             await GetBalance();
         }
@@ -97,6 +103,13 @@ namespace HS4
                 trimmedMessage = trimmedMessage.Substring(0, trimmedMessage.LastIndexOf('}') + 1);
                 return JsonConvert.DeserializeObject<CloudCodeResult>(trimmedMessage);;
             }
+        }
+
+        public static async Task<CloudCodeResult> SetupDatabase() 
+        {
+            var result = await CallApi(ApiName.User_Setup);
+
+            return result;
         }
 
         public static async Task<CloudCodeResult> GetUserInfo() 
@@ -157,6 +170,34 @@ namespace HS4
 
             return result;
         }
+
+        public static async Task<CloudCodeResult> BuyCharacter(string characterId)
+        {
+            var result = await CallApi(ApiName.Buy_Character, new Dictionary<string, object>
+            {
+                {"characterId", characterId}
+            });
+
+            return result;
+        }
+
+        public static async Task<CloudCodeResult> SelectCharacter(string characterId)
+        {
+            var result = await CallApi(ApiName.User_Select_Character, new Dictionary<string, object>
+            {
+                {"characterId", characterId}
+            });
+
+            return result;
+        }
+
+        public static async Task<CloudCodeResult> GetCharacterInUse()
+        {
+            var result = await CallApi(ApiName.User_Get_Character_In_Use);
+
+            return result;
+        }
+
 
     }
 

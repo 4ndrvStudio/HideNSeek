@@ -46,7 +46,6 @@ namespace HS4.PlayerCore
         public float SpeedChangeRate = 10.0f;
         public float RotationSmoothTime = 12f;
         private float _targetRotation = 0.0f;
-        private float _verticalVelocity = -9.18f;
         private bool _footStep = false;
         [SerializeField] private GameObject test;
         [SerializeField] private GameObject Test2;

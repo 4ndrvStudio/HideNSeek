@@ -5,10 +5,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using DG.Tweening;
+using JetBrains.Annotations;
 
 namespace HS4.UI
 {
-    public class UISelectCharacter : MonoBehaviour, IDragHandler
+    public class UISelectCharacter : Singleton<UISelectCharacter>, IDragHandler
     {
         public Camera SelectCharacterCamera;
         [SerializeField] private RenderTexture _renderTexture;
@@ -16,7 +17,7 @@ namespace HS4.UI
 
         [SerializeField] private GameObject _uiCharacterContainer;
         [SerializeField] private GameObject _uiCharacterOb;
-        [SerializeField] private List<UICharacter> _uiCharacterList = new();
+        public List<UICharacter> UiCharacterList = new();
 
         [SerializeField] private Button _nextBtn;
         [SerializeField] private Button _prevBtn;
@@ -52,26 +53,30 @@ namespace HS4.UI
             InstantiateUI();
             _maxPos = -(CharacterManager.Instance.CharacterSpawnedList.Count - 1) * 3f;
             _isCompleteSetup = true;
+
+            var characterInUse = UiCharacterList.Find(item => item.CharacterData.IsInUse);
+            _currentViewPosX = characterInUse.CharacterData.PostionX;
+            MoveCamera(0);
         }
 
         public void Deactive()
         {
-            _uiCharacterList.ForEach(item => Destroy(item.gameObject));
-            _uiCharacterList.Clear();
+            UiCharacterList.ForEach(item => Destroy(item.gameObject));
+            UiCharacterList.Clear();
             _isCompleteSetup = false;
         }
 
         private void InstantiateUI()
         {
-            _uiCharacterList.ForEach(item => Destroy(item.gameObject));
-            _uiCharacterList.Clear();
+            UiCharacterList.ForEach(item => Destroy(item.gameObject));
+            UiCharacterList.Clear();
 
             foreach(var character in CharacterManager.Instance.CharacterSpawnedList)
             {
                 var uiCharacterOb = Instantiate(_uiCharacterOb, _uiCharacterContainer.transform);
                 var script = uiCharacterOb.GetComponent<UICharacter>();
                 script.Setup(character);
-                _uiCharacterList.Add(script);
+                UiCharacterList.Add(script);
             }
         }
 
@@ -94,12 +99,11 @@ namespace HS4.UI
                     newPosition.x = Mathf.Clamp(newPosition.x, _maxPos, 0);
                     _currentViewPosX = newPosition.x;
                     SelectCharacterCamera.transform.position = newPosition;
-                }
-
-                
+                }  
         }
 
         }
+
 
         void Update()
         {
@@ -110,15 +114,21 @@ namespace HS4.UI
 
             if(_isCompleteSetup)
             {
-               foreach (var character in _uiCharacterList)
+               foreach (var character in UiCharacterList)
                {
                     var characterPos = ConvertWorldToCanvas(CharacterManager.Instance.GetCharacter(character.CharacterData.Id).GetCharacterPosition());
                     character.GetComponent<RectTransform>().localPosition = characterPos;
-                    
                     character.IsTargetVew = Mathf.Abs(character.CharacterData.PostionX - _currentViewPosX) < 1.5f;
                 }
             }
         }
+
+        public void RefreshSelect() =>
+            UiCharacterList.ForEach(item => {
+                item.CharacterData.IsInUse = false;
+                item.CharacterData.Animator.Play("Idle");
+            });
+        
 
         void AdjustSize()
         {
@@ -142,7 +152,6 @@ namespace HS4.UI
             else
             {
                 return Vector2.zero;
-                Debug.LogError("Canvas RectTransform is not assigned!");
             }
         }
 

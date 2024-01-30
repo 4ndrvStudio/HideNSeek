@@ -2539,6 +2539,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2147645555308040394}
   - component: {fileID: 8154574042711375119}
+  - component: {fileID: -6688318396346071433}
   m_Layer: 0
   m_Name: Character3
   m_TagString: Untagged
@@ -2589,6 +2590,29 @@ MonoBehaviour:
   IsInUse: 0
   IsUnlocked: 0
   Price: 0
+  PostionX: 0
+  Animator: {fileID: -6688318396346071433}
+--- !u!95 &-6688318396346071433
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7043924016088403409}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: dffa50cfe77e0434bbfa71245b3dd529, type: 3}
+  m_Controller: {fileID: 9100000, guid: 1b50abed9dc401749aa7633a9f500a91, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &7244927459073867893
 GameObject:
   m_ObjectHideFlags: 0

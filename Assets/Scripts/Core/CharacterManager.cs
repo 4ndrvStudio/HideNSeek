@@ -31,6 +31,8 @@ namespace HS4
             _characterOwnedList = JsonConvert.DeserializeObject<List<Backend.Character>>(
                                     characterOwnedResult.Data.ToString());
 
+            var characterInUseId = await User.GetCharacterInUse(); 
+
             var _characterConfigs = ConfigManager.Instance.CharacterConfigs;
 
             for (int i = 0; i < _characterConfigs.Count; i++)
@@ -41,7 +43,7 @@ namespace HS4
                 characterOb.transform.position = new Vector3(-i * 3f, 0, 0);
                 characterData.Setup(
                     id: _characterConfigs[i].Id,
-                    isInUse: false,
+                    isInUse:  _characterConfigs[i].Id == characterInUseId.Data.ToString(),
                     isUnlocked: hasOwn,
                     price: ConfigManager.Instance.GetCharacterPrice(_characterConfigs[i].Id)
                     );

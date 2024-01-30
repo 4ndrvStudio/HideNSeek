@@ -5,6 +5,7 @@ using HS4.Config;
 
 namespace HS4
 {
+    [System.Serializable]
     public class CharacterData : MonoBehaviour
     {
         public string Id;
@@ -12,6 +13,7 @@ namespace HS4
         public bool IsUnlocked;
         public int Price;
         public float PostionX;
+        public Animator Animator;
 
         public void Setup(string id, bool isInUse, bool isUnlocked, int price)
         {

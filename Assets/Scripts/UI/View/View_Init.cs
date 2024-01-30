@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using HS4.Config;
-
+using UnityEngine.SceneManagement;
 namespace HS4.UI
 {
     public class View_Init : UIView
@@ -25,8 +25,9 @@ namespace HS4.UI
             await Task.Delay(1000);
             UIManager.Instance.ToggleView(ViewName.Home);
            
-                
         }
+
+       
 
        
     }

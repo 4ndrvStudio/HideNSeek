@@ -11,6 +11,7 @@ namespace HS4.Config
 
     public static class SceneName
     {
+        public static string Init = "scene_init";
         public static string Gameplay = "scene_gameplay";
         public static string Character = "scene_character";
     }
