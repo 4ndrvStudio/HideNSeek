@@ -2,7 +2,6 @@ const { CurrenciesApi, InventoryApi } = require("@unity-services/economy-2.4");
 const { SettingsApi } = require("@unity-services/remote-config-1.0");
 
 module.exports = async ({ params, context, logger }) => {
-
     try {
         const { projectId, playerId, accessToken, environmentId } = context;
         const currencyApi = new CurrenciesApi({ accessToken });
@@ -13,7 +12,7 @@ module.exports = async ({ params, context, logger }) => {
         const currencyRespone = await currencyApi.getPlayerCurrencies(currencyRequest);
 
         //get current gold
-        const currentGold = currencyRespone.data.results.find(currency => currency.currencyId == "GOLD");
+        const currentGem = currencyRespone.data.results.find(currency => currency.currencyId == "GEM");
 
         //get config
         const configType = "settings";
@@ -23,7 +22,7 @@ module.exports = async ({ params, context, logger }) => {
         const characterPack = bundlePackConfig.character.find(character => character.id == params.characterId);
 
         //Validate State
-        if (currentGold.balance < characterPack.price) throw new Error("Your not enough Gold");
+        if (currentGem.balance < characterPack.price) throw new Error("Your not enough GEM");
 
         //character
         const addInventoryRequest = {
@@ -39,9 +38,9 @@ module.exports = async ({ params, context, logger }) => {
 
         const addInventoryResponse = await inventoryApi.addInventoryItem(addInventoryRequest);
 
-        //request update gold 
-        const goldRequest = {
-            currencyId: "GOLD",
+        //request update Gem 
+        const gemRequest = {
+            currencyId: "GEM",
             currencyModifyBalanceRequest: {
                 amount: characterPack.price
             },
@@ -49,7 +48,7 @@ module.exports = async ({ params, context, logger }) => {
             projectId
         }
 
-        let currencyResult = await currencyApi.decrementPlayerCurrencyBalance(goldRequest);
+        let currencyResult = await currencyApi.decrementPlayerCurrencyBalance(gemRequest);
 
 
         return {

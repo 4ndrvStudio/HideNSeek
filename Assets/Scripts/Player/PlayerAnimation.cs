@@ -15,6 +15,7 @@ namespace HS4.PlayerCore
     public class PlayerAnimation : MonoBehaviour
     {
         [SerializeField] private Animator _animator;
+        //[SerializeField] private N
 
         private AnimationType _animationType;
 
@@ -27,7 +28,7 @@ namespace HS4.PlayerCore
         }
 
       public void SetAnimator(Animator animator) {
-         _animator = animator;
+            _animator = animator;
       }  
 
         public bool IsDied()

@@ -14,8 +14,8 @@ namespace HS4.PlayerCore
         [SerializeField] private GameObject _hiderBody;
         [SerializeField] private GameObject _seekerBody;
         [SerializeField] private GameObject _caseOb;
-        //Radar
 
+        //Radar
         [SerializeField] private RadarView _radarView;
         [SerializeField] private CircleRadarView _circleRadarView;
 

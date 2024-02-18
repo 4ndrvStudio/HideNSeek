@@ -69,19 +69,19 @@
     "character": [
         {
             "id": "character_1",
-            "price": 1000
+            "price": 40
         },
         {
             "id": "character_2",
-            "price": 2000
+            "price": 60
         },
         {
             "id": "character_3",
-            "price": 3000
+            "price": 100
         },
         {
             "id": "character_4",
-            "price": 4000
+            "price": 500
         }
     ]
 }

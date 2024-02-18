@@ -12,69 +12,67 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c24fdb3bd6431b92cc1465bd9166b, type: 3}
   m_Name: RemoteConfigDataStoreAsset
   m_EditorClassIdentifier: 
-  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"d57b6778-04f5-43e3-a2df-a38a43dbb5b7\"\r\n   
-    },\r\n    \"rs\": {\r\n      \"key\": \"appVersion\",\r\n      \"type\": \"string\",\r\n     
-    \"value\": \"1.0\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"9eb9d9fb-553a-4f79-89cc-e75f3f4abe9f\"\r\n    },\r\n    \"rs\": {\r\n     
-    \"key\": \"bundlePackConfig\",\r\n      \"type\": \"json\",\r\n      \"schemaId\":
-    null,\r\n      \"value\": {\r\n        \"gold\": [\r\n          {\r\n           
-    \"packId\": \"gold_pack_1\",\r\n            \"amount\": 1000,\r\n           
-    \"price\": 30\r\n          },\r\n          {\r\n            \"packId\": \"gold_pack_2\",\r\n           
-    \"amount\": 3000,\r\n            \"price\": 80\r\n          },\r\n          {\r\n           
-    \"packId\": \"gold_pack_3\",\r\n            \"amount\": 9000,\r\n           
-    \"price\": 210\r\n          }\r\n        ],\r\n        \"gem\": [\r\n         
-    {\r\n            \"packId\": \"gem_pack_1\",\r\n            \"amount\": 30,\r\n           
-    \"price\": {\r\n              \"EN\": 0.99,\r\n              \"VI\": 24000\r\n           
-    }\r\n          },\r\n          {\r\n            \"packId\": \"gem_pack_2\",\r\n           
-    \"amount\": 80,\r\n            \"price\": {\r\n              \"EN\": 1.99,\r\n             
-    \"VI\": 48000\r\n            }\r\n          },\r\n          {\r\n           
-    \"packId\": \"gem_pack_3\",\r\n            \"amount\": 170,\r\n            \"price\":
-    {\r\n              \"EN\": 3.99,\r\n              \"VI\": 96000\r\n           
-    }\r\n          },\r\n          {\r\n            \"packId\": \"gem_pack_4\",\r\n           
-    \"amount\": 360,\r\n            \"price\": {\r\n              \"EN\": 7.99,\r\n             
-    \"VI\": 192000\r\n            }\r\n          },\r\n          {\r\n           
-    \"packId\": \"gem_pack_5\",\r\n            \"amount\": 950,\r\n            \"price\":
-    {\r\n              \"EN\": 19.99,\r\n              \"VI\": 480000\r\n           
-    }\r\n          },\r\n          {\r\n            \"packId\": \"gem_pack_6\",\r\n           
-    \"amount\": 2000,\r\n            \"price\": {\r\n              \"EN\": 39.99,\r\n             
-    \"VI\": 960000\r\n            }\r\n          }\r\n        ],\r\n        \"character\":
-    [\r\n          {\r\n            \"id\": \"character_1\",\r\n            \"price\":
-    0\r\n          },\r\n          {\r\n            \"id\": \"character_2\",\r\n           
-    \"price\": 2000\r\n          },\r\n          {\r\n            \"id\": \"character_3\",\r\n           
-    \"price\": 3000\r\n          },\r\n          {\r\n            \"id\": \"character_4\",\r\n           
-    \"price\": 4000\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  }\r\n]"
-  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"d57b6778-04f5-43e3-a2df-a38a43dbb5b7\"\r\n   
-    },\r\n    \"rs\": {\r\n      \"key\": \"appVersion\",\r\n      \"type\": \"string\",\r\n     
-    \"value\": \"1.0\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"9eb9d9fb-553a-4f79-89cc-e75f3f4abe9f\"\r\n    },\r\n    \"rs\": {\r\n     
-    \"key\": \"bundlePackConfig\",\r\n      \"type\": \"json\",\r\n      \"schemaId\":
-    null,\r\n      \"value\": {\r\n        \"gold\": [\r\n          {\r\n           
-    \"packId\": \"gold_pack_1\",\r\n            \"amount\": 1000,\r\n           
-    \"price\": 30\r\n          },\r\n          {\r\n            \"packId\": \"gold_pack_2\",\r\n           
-    \"amount\": 3000,\r\n            \"price\": 80\r\n          },\r\n          {\r\n           
-    \"packId\": \"gold_pack_3\",\r\n            \"amount\": 9000,\r\n           
-    \"price\": 210\r\n          }\r\n        ],\r\n        \"gem\": [\r\n         
-    {\r\n            \"packId\": \"gem_pack_1\",\r\n            \"amount\": 30,\r\n           
-    \"price\": {\r\n              \"EN\": 0.99,\r\n              \"VI\": 24000\r\n           
-    }\r\n          },\r\n          {\r\n            \"packId\": \"gem_pack_2\",\r\n           
-    \"amount\": 80,\r\n            \"price\": {\r\n              \"EN\": 1.99,\r\n             
-    \"VI\": 48000\r\n            }\r\n          },\r\n          {\r\n           
-    \"packId\": \"gem_pack_3\",\r\n            \"amount\": 170,\r\n            \"price\":
-    {\r\n              \"EN\": 3.99,\r\n              \"VI\": 96000\r\n           
-    }\r\n          },\r\n          {\r\n            \"packId\": \"gem_pack_4\",\r\n           
-    \"amount\": 360,\r\n            \"price\": {\r\n              \"EN\": 7.99,\r\n             
-    \"VI\": 192000\r\n            }\r\n          },\r\n          {\r\n           
-    \"packId\": \"gem_pack_5\",\r\n            \"amount\": 950,\r\n            \"price\":
-    {\r\n              \"EN\": 19.99,\r\n              \"VI\": 480000\r\n           
-    }\r\n          },\r\n          {\r\n            \"packId\": \"gem_pack_6\",\r\n           
-    \"amount\": 2000,\r\n            \"price\": {\r\n              \"EN\": 39.99,\r\n             
-    \"VI\": 960000\r\n            }\r\n          }\r\n        ],\r\n        \"character\":
-    [\r\n          {\r\n            \"id\": \"character_1\",\r\n            \"price\":
-    0\r\n          },\r\n          {\r\n            \"id\": \"character_2\",\r\n           
-    \"price\": 2000\r\n          },\r\n          {\r\n            \"id\": \"character_3\",\r\n           
-    \"price\": 3000\r\n          },\r\n          {\r\n            \"id\": \"character_4\",\r\n           
-    \"price\": 4000\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  }\r\n]"
-  _environments: "[\r\n  {\r\n    \"projectId\": \"daeb4bd2-80e3-4620-9414-a101f190e2d0\",\r\n   
-    \"name\": \"production\",\r\n    \"id\": \"e9060f75-1628-4f20-a701-193e69efc9ab\",\r\n   
-    \"isDefault\": true,\r\n    \"createdAt\": \"2023-11-06T15:04:35Z\",\r\n    \"updatedAt\":
-    \"2023-11-06T15:04:35Z\"\r\n  }\r\n]"
+  _rsKeyList: "[\n  {\n    \"metadata\": {\n      \"entityId\": \"272c9965-7068-40d6-a818-7b167b8f61a6\"\n   
+    },\n    \"rs\": {\n      \"key\": \"appVersion\",\n      \"type\": \"string\",\n     
+    \"value\": \"1.0\"\n    }\n  },\n  {\n    \"metadata\": {\n      \"entityId\":
+    \"15382e2c-7e96-4652-9514-6796624e5678\"\n    },\n    \"rs\": {\n      \"key\":
+    \"bundlePackConfig\",\n      \"type\": \"json\",\n      \"schemaId\": null,\n     
+    \"value\": {\n        \"gold\": [\n          {\n            \"packId\": \"gold_pack_1\",\n           
+    \"amount\": 1000,\n            \"price\": 30\n          },\n          {\n           
+    \"packId\": \"gold_pack_2\",\n            \"amount\": 3000,\n            \"price\":
+    80\n          },\n          {\n            \"packId\": \"gold_pack_3\",\n           
+    \"amount\": 9000,\n            \"price\": 210\n          }\n        ],\n       
+    \"gem\": [\n          {\n            \"packId\": \"gem_pack_1\",\n           
+    \"amount\": 30,\n            \"price\": {\n              \"EN\": 0.99,\n             
+    \"VI\": 24000\n            }\n          },\n          {\n            \"packId\":
+    \"gem_pack_2\",\n            \"amount\": 80,\n            \"price\": {\n             
+    \"EN\": 1.99,\n              \"VI\": 48000\n            }\n          },\n         
+    {\n            \"packId\": \"gem_pack_3\",\n            \"amount\": 170,\n           
+    \"price\": {\n              \"EN\": 3.99,\n              \"VI\": 96000\n           
+    }\n          },\n          {\n            \"packId\": \"gem_pack_4\",\n           
+    \"amount\": 360,\n            \"price\": {\n              \"EN\": 7.99,\n             
+    \"VI\": 192000\n            }\n          },\n          {\n            \"packId\":
+    \"gem_pack_5\",\n            \"amount\": 950,\n            \"price\": {\n             
+    \"EN\": 19.99,\n              \"VI\": 480000\n            }\n          },\n         
+    {\n            \"packId\": \"gem_pack_6\",\n            \"amount\": 2000,\n           
+    \"price\": {\n              \"EN\": 39.99,\n              \"VI\": 960000\n           
+    }\n          }\n        ],\n        \"character\": [\n          {\n           
+    \"id\": \"character_1\",\n            \"price\": 0\n          },\n          {\n           
+    \"id\": \"character_2\",\n            \"price\": 40\n          },\n         
+    {\n            \"id\": \"character_3\",\n            \"price\": 90\n         
+    },\n          {\n            \"id\": \"character_4\",\n            \"price\":
+    150\n          }\n        ]\n      }\n    }\n  }\n]"
+  _rsLastCachedKeyList: "[\n  {\n    \"metadata\": {\n      \"entityId\": \"272c9965-7068-40d6-a818-7b167b8f61a6\"\n   
+    },\n    \"rs\": {\n      \"key\": \"appVersion\",\n      \"type\": \"string\",\n     
+    \"value\": \"1.0\"\n    }\n  },\n  {\n    \"metadata\": {\n      \"entityId\":
+    \"15382e2c-7e96-4652-9514-6796624e5678\"\n    },\n    \"rs\": {\n      \"key\":
+    \"bundlePackConfig\",\n      \"type\": \"json\",\n      \"schemaId\": null,\n     
+    \"value\": {\n        \"gold\": [\n          {\n            \"packId\": \"gold_pack_1\",\n           
+    \"amount\": 1000,\n            \"price\": 30\n          },\n          {\n           
+    \"packId\": \"gold_pack_2\",\n            \"amount\": 3000,\n            \"price\":
+    80\n          },\n          {\n            \"packId\": \"gold_pack_3\",\n           
+    \"amount\": 9000,\n            \"price\": 210\n          }\n        ],\n       
+    \"gem\": [\n          {\n            \"packId\": \"gem_pack_1\",\n           
+    \"amount\": 30,\n            \"price\": {\n              \"EN\": 0.99,\n             
+    \"VI\": 24000\n            }\n          },\n          {\n            \"packId\":
+    \"gem_pack_2\",\n            \"amount\": 80,\n            \"price\": {\n             
+    \"EN\": 1.99,\n              \"VI\": 48000\n            }\n          },\n         
+    {\n            \"packId\": \"gem_pack_3\",\n            \"amount\": 170,\n           
+    \"price\": {\n              \"EN\": 3.99,\n              \"VI\": 96000\n           
+    }\n          },\n          {\n            \"packId\": \"gem_pack_4\",\n           
+    \"amount\": 360,\n            \"price\": {\n              \"EN\": 7.99,\n             
+    \"VI\": 192000\n            }\n          },\n          {\n            \"packId\":
+    \"gem_pack_5\",\n            \"amount\": 950,\n            \"price\": {\n             
+    \"EN\": 19.99,\n              \"VI\": 480000\n            }\n          },\n         
+    {\n            \"packId\": \"gem_pack_6\",\n            \"amount\": 2000,\n           
+    \"price\": {\n              \"EN\": 39.99,\n              \"VI\": 960000\n           
+    }\n          }\n        ],\n        \"character\": [\n          {\n           
+    \"id\": \"character_1\",\n            \"price\": 0\n          },\n          {\n           
+    \"id\": \"character_2\",\n            \"price\": 40\n          },\n         
+    {\n            \"id\": \"character_3\",\n            \"price\": 90\n         
+    },\n          {\n            \"id\": \"character_4\",\n            \"price\":
+    150\n          }\n        ]\n      }\n    }\n  }\n]"
+  _environments: "[\n  {\n    \"projectId\": \"daeb4bd2-80e3-4620-9414-a101f190e2d0\",\n   
+    \"name\": \"production\",\n    \"id\": \"e9060f75-1628-4f20-a701-193e69efc9ab\",\n   
+    \"isDefault\": true,\n    \"createdAt\": \"2023-11-06T15:04:35Z\",\n    \"updatedAt\":
+    \"2023-11-06T15:04:35Z\"\n  }\n]"

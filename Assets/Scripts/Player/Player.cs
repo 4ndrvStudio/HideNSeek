@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -19,6 +20,12 @@ namespace HS4.PlayerCore
         private Vector3 _rootPosition;
         private Quaternion _rootRotation;
 
+        [Header("Info")]
+        [SerializeField] private TextMeshPro _playerNameText;
+        [SerializeField] private List<GameObject> _playerBody; 
+        //network
+        public NetworkVariable<string> PlayerName = new NetworkVariable<string>(default);
+
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
@@ -28,9 +35,15 @@ namespace HS4.PlayerCore
             if(IsOwner) {
                 if(LocalPlayer == null) {
                     LocalPlayer =this;
+                    
+                    //setname 
+
+                    //set body 
+                    
                 }
-                Debug.Log(this.gameObject.name);
             }
+
+
             IsHider.OnValueChanged += OnHiderStateChange;
             IsKill.OnValueChanged += OnIsKillStateChange;
 
@@ -120,6 +133,15 @@ namespace HS4.PlayerCore
             PlayerMovement.SetCanMove(IsKill.Value);
             PlayerView.SetIsKill(IsKill.Value);
         }
+
+        private void OnNameChange(string prev, string current) {
+            _playerNameText.text = current;
+        }
+
+        private void OnBodyChange(string prevId, string currentId) {
+            
+        }
+        
 
 
    
