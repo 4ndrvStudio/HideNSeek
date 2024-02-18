@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Game;
+using HS4.Config;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -11,8 +12,6 @@ namespace HS4.PlayerCore
 
         [SerializeField] private PlayerAnimation _playerAnimation;
         [SerializeField] private SkinnedMeshRenderer _skinMeshRender;
-        [SerializeField] private GameObject _hiderBody;
-        [SerializeField] private GameObject _seekerBody;
         [SerializeField] private GameObject _caseOb;
 
         //Radar
@@ -25,14 +24,12 @@ namespace HS4.PlayerCore
         public void SetCharacterType(bool isHider)
         {
             _isHider = isHider;
-            SetBody(isHider);
         }
 
-        private void SetBody(bool isHider) {
-            _hiderBody.SetActive(isHider);
-            _seekerBody.SetActive(!isHider);
+        public void SetBody(string id) {
             ObjectHide = false;
-            var targetBody = isHider ? _hiderBody : _seekerBody;
+            var targetBody = Instantiate(ConfigManager.Instance.GetCharacterPrefab(id),this.transform);
+            targetBody.transform.localPosition = Vector3.zero;
             _skinMeshRender = targetBody.GetComponentInChildren<SkinnedMeshRenderer>();
             _playerAnimation.SetAnimator(targetBody.GetComponent<Animator>());
         }

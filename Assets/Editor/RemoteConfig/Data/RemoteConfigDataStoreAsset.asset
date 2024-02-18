@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c24fdb3bd6431b92cc1465bd9166b, type: 3}
   m_Name: RemoteConfigDataStoreAsset
   m_EditorClassIdentifier: 
-  _rsKeyList: "[\n  {\n    \"metadata\": {\n      \"entityId\": \"272c9965-7068-40d6-a818-7b167b8f61a6\"\n   
+  _rsKeyList: "[\n  {\n    \"metadata\": {\n      \"entityId\": \"b4020b79-2930-424b-8830-630e409bd4ab\"\n   
     },\n    \"rs\": {\n      \"key\": \"appVersion\",\n      \"type\": \"string\",\n     
     \"value\": \"1.0\"\n    }\n  },\n  {\n    \"metadata\": {\n      \"entityId\":
-    \"15382e2c-7e96-4652-9514-6796624e5678\"\n    },\n    \"rs\": {\n      \"key\":
+    \"02e3866d-03ab-4218-96e0-847c1aaaaa1d\"\n    },\n    \"rs\": {\n      \"key\":
     \"bundlePackConfig\",\n      \"type\": \"json\",\n      \"schemaId\": null,\n     
     \"value\": {\n        \"gold\": [\n          {\n            \"packId\": \"gold_pack_1\",\n           
     \"amount\": 1000,\n            \"price\": 30\n          },\n          {\n           
@@ -42,10 +42,10 @@ MonoBehaviour:
     {\n            \"id\": \"character_3\",\n            \"price\": 90\n         
     },\n          {\n            \"id\": \"character_4\",\n            \"price\":
     150\n          }\n        ]\n      }\n    }\n  }\n]"
-  _rsLastCachedKeyList: "[\n  {\n    \"metadata\": {\n      \"entityId\": \"272c9965-7068-40d6-a818-7b167b8f61a6\"\n   
+  _rsLastCachedKeyList: "[\n  {\n    \"metadata\": {\n      \"entityId\": \"b4020b79-2930-424b-8830-630e409bd4ab\"\n   
     },\n    \"rs\": {\n      \"key\": \"appVersion\",\n      \"type\": \"string\",\n     
     \"value\": \"1.0\"\n    }\n  },\n  {\n    \"metadata\": {\n      \"entityId\":
-    \"15382e2c-7e96-4652-9514-6796624e5678\"\n    },\n    \"rs\": {\n      \"key\":
+    \"02e3866d-03ab-4218-96e0-847c1aaaaa1d\"\n    },\n    \"rs\": {\n      \"key\":
     \"bundlePackConfig\",\n      \"type\": \"json\",\n      \"schemaId\": null,\n     
     \"value\": {\n        \"gold\": [\n          {\n            \"packId\": \"gold_pack_1\",\n           
     \"amount\": 1000,\n            \"price\": 30\n          },\n          {\n           

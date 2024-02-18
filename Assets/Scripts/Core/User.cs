@@ -194,7 +194,6 @@ namespace HS4
         public static async Task<CloudCodeResult> GetCharacterInUse()
         {
             var result = await CallApi(ApiName.User_Get_Character_In_Use);
-
             return result;
         }
 

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TMPro;
+using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -24,7 +25,8 @@ namespace HS4.PlayerCore
         [SerializeField] private TextMeshPro _playerNameText;
         [SerializeField] private List<GameObject> _playerBody; 
         //network
-        public NetworkVariable<string> PlayerName = new NetworkVariable<string>(default);
+        public NetworkVariable<FixedString64Bytes> PlayerName = new NetworkVariable<FixedString64Bytes>(default);
+        public NetworkVariable<FixedString64Bytes> PlayerBodyId = new NetworkVariable<FixedString64Bytes>("character_1");
 
         public override void OnNetworkSpawn()
         {
@@ -35,17 +37,15 @@ namespace HS4.PlayerCore
             if(IsOwner) {
                 if(LocalPlayer == null) {
                     LocalPlayer =this;
-                    
                     //setname 
-
                     //set body 
-                    
+                    GetBody();
                 }
             }
 
-
             IsHider.OnValueChanged += OnHiderStateChange;
             IsKill.OnValueChanged += OnIsKillStateChange;
+            PlayerBodyId.OnValueChanged += OnBodyChange;
 
             if(IsServer) {
                 IsHider.Value = true;
@@ -54,11 +54,19 @@ namespace HS4.PlayerCore
             SetupCharacterType();
            
         }
+
+        public async void GetBody() {
+            var idResult = await User.GetCharacterInUse(); 
+            string characterId =  idResult.IsSuccess ? idResult.Data.ToString() : "character_1";
+            PlayerBodyId.Value = characterId;
+        }
+
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
             IsHider.OnValueChanged -= OnHiderStateChange;
             IsKill.OnValueChanged -= OnIsKillStateChange;
+            PlayerBodyId.OnValueChanged -= OnBodyChange;
             LocalPlayer = null;
         }
 
@@ -134,12 +142,12 @@ namespace HS4.PlayerCore
             PlayerView.SetIsKill(IsKill.Value);
         }
 
-        private void OnNameChange(string prev, string current) {
-            _playerNameText.text = current;
+        private void OnNameChange(FixedString64Bytes prev, FixedString64Bytes current) {
+            _playerNameText.text = current.ToString();
         }
 
-        private void OnBodyChange(string prevId, string currentId) {
-            
+        private void OnBodyChange(FixedString64Bytes prevId, FixedString64Bytes currentId) {
+            PlayerView.SetBody(currentId.ToString());  
         }
         
 
