@@ -22,43 +22,56 @@ namespace HS4.PlayerCore
         private Quaternion _rootRotation;
 
         [Header("Info")]
-        [SerializeField] private TextMeshPro _playerNameText;
-        [SerializeField] private List<GameObject> _playerBody; 
         //network
-        public NetworkVariable<FixedString64Bytes> PlayerName = new NetworkVariable<FixedString64Bytes>(default);
-        public NetworkVariable<FixedString64Bytes> PlayerBodyId = new NetworkVariable<FixedString64Bytes>("character_1");
+        public NetworkVariable<FixedString64Bytes> PlayerName = new NetworkVariable<FixedString64Bytes>
+                                                                    (default,NetworkVariableReadPermission.Everyone,NetworkVariableWritePermission.Owner);
+        public NetworkVariable<FixedString64Bytes> PlayerBodyId = new NetworkVariable<FixedString64Bytes>
+                                                                    (default,NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-            _rootPosition = transform.position;
-            _rootRotation = transform.rotation;
             
-            if(IsOwner) {
-                if(LocalPlayer == null) {
+            if(IsOwner) 
+            {
+                //get data
+                if(LocalPlayer == null) 
                     LocalPlayer =this;
-                    //setname 
-                    //set body 
-                    GetBody();
-                }
+
+                GetInfoData();
             }
 
+            InitializeData();          
+
+            //event
             IsHider.OnValueChanged += OnHiderStateChange;
             IsKill.OnValueChanged += OnIsKillStateChange;
+            PlayerName.OnValueChanged += OnNameChange;
             PlayerBodyId.OnValueChanged += OnBodyChange;
+           
+        }
+
+        public void InitializeData() 
+        {
 
             if(IsServer) {
                 IsHider.Value = true;
             }
-
             SetupCharacterType();
-           
+            PlayerView.SetBody(PlayerBodyId.Value.ToString());  
+            PlayerView.SetName(PlayerName.Value.ToString());
+
+            //root pos
+            _rootPosition = transform.position;
+            _rootRotation = transform.rotation;
         }
 
-        public async void GetBody() {
+        public async void GetInfoData() 
+        {
             var idResult = await User.GetCharacterInUse(); 
             string characterId =  idResult.IsSuccess ? idResult.Data.ToString() : "character_1";
             PlayerBodyId.Value = characterId;
+            PlayerName.Value = User.Info.UserName;
         }
 
         public override void OnNetworkDespawn()
@@ -67,6 +80,7 @@ namespace HS4.PlayerCore
             IsHider.OnValueChanged -= OnHiderStateChange;
             IsKill.OnValueChanged -= OnIsKillStateChange;
             PlayerBodyId.OnValueChanged -= OnBodyChange;
+            PlayerName.OnValueChanged -= OnNameChange;
             LocalPlayer = null;
         }
 
@@ -77,10 +91,12 @@ namespace HS4.PlayerCore
             {
                 if(IsHider.Value == false) {
                     PlayerView.TurnOnRadar();
-                } 
+                }
             } else {
                 if(LocalPlayer.IsHider.Value == false && IsHider.Value == true) {
                    PlayerView.Hide();
+                } else {
+                   PlayerView.TurnOnCircle();
                 }
             }
         }
@@ -93,7 +109,8 @@ namespace HS4.PlayerCore
         }
 
         [ClientRpc]
-        public void ResetPositionAndViewClientRpc() {
+        public void ResetPositionAndViewClientRpc() 
+        {
             if(IsOwner || IsServer) {
                 transform.position = _rootPosition;
                 transform.rotation = _rootRotation;
@@ -142,13 +159,17 @@ namespace HS4.PlayerCore
             PlayerView.SetIsKill(IsKill.Value);
         }
 
-        private void OnNameChange(FixedString64Bytes prev, FixedString64Bytes current) {
-            _playerNameText.text = current.ToString();
+        private void OnNameChange(FixedString64Bytes prev, FixedString64Bytes current) 
+        {
+            PlayerView.SetName(current.ToString());
         }
 
-        private void OnBodyChange(FixedString64Bytes prevId, FixedString64Bytes currentId) {
+        private void OnBodyChange(FixedString64Bytes prevId, FixedString64Bytes currentId) 
+        {
             PlayerView.SetBody(currentId.ToString());  
         }
+
+    
         
 
 

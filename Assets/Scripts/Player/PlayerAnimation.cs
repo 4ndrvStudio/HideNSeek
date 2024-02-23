@@ -39,35 +39,23 @@ namespace HS4.PlayerCore
 
         public virtual void Idle()
         {
-            PlayAnimation(AnimationType.Idle);
+            _animator.SetBool("isWalk",false);
+            _animator.SetBool("isDeath",false);
         }
 
         public void Walk()
         {
-            PlayAnimation(AnimationType.Walk);
+            _animator.SetBool("isWalk",true);
         }
 
         public virtual void Die()
         {
-            PlayAnimation(AnimationType.Died);
+            _animator.SetBool("isWalk",false);
+            _animator.SetBool("isDeath",true);
+
         }
 
-        private void PlayAnimation(AnimationType animationType)
-        {
-            if (_animationType == animationType)
-                return;
-
-            _animationType = animationType;
-            var nameHash = Animator.StringToHash(_animationType.ToString());
-
-            _animator.Play(nameHash);
-
-            if (_animator.HasState(1, nameHash))
-            {
-                _animator.Play(nameHash, 1);
-            }
-            _animator.Update(0);
-        }
+    
     }
 
 }
