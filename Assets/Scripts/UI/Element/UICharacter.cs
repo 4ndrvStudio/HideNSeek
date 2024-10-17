@@ -84,6 +84,8 @@ namespace HS4.UI
                 };
                 UIManager.Instance.ShowPopup(PopupName.Notify,new Dictionary<string, object>{{"notifyData", notifyData}});
             }
+
+            var s = await User.GetCharacterInUse();
         }
 
         private async void Buy() {

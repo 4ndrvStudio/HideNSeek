@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TMPro;
+using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -24,7 +25,8 @@ namespace HS4.PlayerCore
         [SerializeField] private TextMeshPro _playerNameText;
         [SerializeField] private List<GameObject> _playerBody; 
         //network
-        public NetworkVariable<string> PlayerName = new NetworkVariable<string>(default);
+        public NetworkVariable<FixedString32Bytes> PlayerName = new NetworkVariable<FixedString32Bytes>(default,NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+        public NetworkVariable<FixedString32Bytes> Character_Id = new NetworkVariable<FixedString32Bytes>("character_1", NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
         public override void OnNetworkSpawn()
         {
@@ -37,15 +39,13 @@ namespace HS4.PlayerCore
                     LocalPlayer =this;
                     
                     //setname 
-
+                   // PlayerName.Value = User.Info.UserName;
                     //set body 
-                    
+                    Character_Id.Value = User.CharacterInUseId;
                 }
             }
 
-
-            IsHider.OnValueChanged += OnHiderStateChange;
-            IsKill.OnValueChanged += OnIsKillStateChange;
+          
 
             if(IsServer) {
                 IsHider.Value = true;
@@ -54,11 +54,22 @@ namespace HS4.PlayerCore
             SetupCharacterType();
            
         }
+
+        public void OnEnable() 
+        {
+            //PlayerName.OnValueChanged += PlayerNameChange;
+            IsHider.OnValueChanged += OnHiderStateChange;
+            IsKill.OnValueChanged += OnIsKillStateChange;
+            Character_Id.OnValueChanged += OnCharacterIdStateChange;
+        }
+
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
+           // PlayerName.OnValueChanged -= PlayerNameChange;
             IsHider.OnValueChanged -= OnHiderStateChange;
             IsKill.OnValueChanged -= OnIsKillStateChange;
+            Character_Id.OnValueChanged -= OnCharacterIdStateChange;
             LocalPlayer = null;
         }
 
@@ -79,7 +90,7 @@ namespace HS4.PlayerCore
 
         public async void Reset() {
             IsHider.Value = true;
-            await Task.Delay(2000);
+            await Task.Delay(2500);
             IsKill.Value = false;
             ResetPositionAndViewClientRpc();
         }
@@ -98,7 +109,7 @@ namespace HS4.PlayerCore
         public void SetIsSeeker() 
         {
             if(IsServer) {
-                 IsHider.Value = false;
+                IsHider.Value = false;
             }
         } 
 
@@ -120,8 +131,10 @@ namespace HS4.PlayerCore
         }
         private void SetupCharacterType() 
         {
-           PlayerView.SetCharacterType(IsHider.Value);
-            
+           PlayerView.SetCharacterType(IsHider.Value,Character_Id.Value.ToString());
+        
+            _playerNameText.text = IsHider.Value? "Hider": "Seeker";
+
            if(IsHider.Value)  
                 gameObject.layer =  LayerMask.NameToLayer("Victim");
             else 
@@ -134,9 +147,18 @@ namespace HS4.PlayerCore
             PlayerView.SetIsKill(IsKill.Value);
         }
 
-        private void OnNameChange(string prev, string current) {
-            _playerNameText.text = current;
+        private void OnCharacterIdStateChange(FixedString32Bytes prev, FixedString32Bytes current) 
+        {
+            Debug.Log("character change");
+            SetupCharacterType();
         }
+         private void PlayerNameChange(FixedString32Bytes prev, FixedString32Bytes current) 
+        {
+            Debug.Log("name change");
+            _playerNameText.text = current.ToString();
+        }
+
+        
 
         private void OnBodyChange(string prevId, string currentId) {
             

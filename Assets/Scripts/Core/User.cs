@@ -7,6 +7,7 @@ using Unity.Services.Core.Environments;
 using System.Threading.Tasks;
 using Unity.Services.CloudCode;
 using Newtonsoft.Json;
+using System;
 
 namespace HS4
 {
@@ -67,6 +68,7 @@ namespace HS4
     {
         public static UserInfo Info;
         public static Balance Balance;
+        public static String CharacterInUseId= string.Empty;
 
         public static async Task<bool> SignInAnonymouslyAsync()
         {
@@ -108,7 +110,6 @@ namespace HS4
         public static async Task<CloudCodeResult> SetupDatabase() 
         {
             var result = await CallApi(ApiName.User_Setup);
-
             return result;
         }
 
@@ -194,7 +195,7 @@ namespace HS4
         public static async Task<CloudCodeResult> GetCharacterInUse()
         {
             var result = await CallApi(ApiName.User_Get_Character_In_Use);
-
+            CharacterInUseId = result.Data.ToString();
             return result;
         }
 

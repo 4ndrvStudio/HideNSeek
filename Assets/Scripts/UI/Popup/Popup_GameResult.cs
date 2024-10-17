@@ -14,7 +14,7 @@ namespace HS4.UI
         {
             base.Show(customProperties);
             bool result = bool.Parse(_customProperties["result"].ToString());
-            _notifyText.text = result ? "You Win" : "You Close";
+            _notifyText.text = result ? "You Win" : "You Lose";
             StartCoroutine(ClosePopup());
         }
 

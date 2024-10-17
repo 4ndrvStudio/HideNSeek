@@ -77,16 +77,24 @@ namespace HS4.PlayerCore
 
             _serverStateBuffer = new CircularBuffer<StatePayload>(k_bufferSize);
             _serverInputQueue = new Queue<InputPayload>();
-
-            // Test2 =Instantiate(test);
+            _isStartGame = false;
+            _isCanMove.Value = false;
+           
         }
 
         public void EnableInput() {
+            _clientInputBuffer.Clear();
             _isStartGame = true;
             if(IsOwner) UIController.Instance.Active();
+            _isCanMove.Value = true;
+            Debug.Log("Call start gAme");
         }
 
         public void SetCanMove(bool isKill) {
+            _isStartGame = !isKill;
+            Debug.Log("set Can move");
+            if(!isKill)
+                _clientInputBuffer.Clear();
             if(IsServer)
              _isCanMove.Value = !isKill;
         } 
@@ -110,16 +118,18 @@ namespace HS4.PlayerCore
 
         private void HandleClientTick()
         {
-
+            if (!_isStartGame) return;
+            
             if (IsOwner)
             {
+
                 var currentTick = _timer.CurrentTick;
                 var bufferIndex = currentTick % k_bufferSize;
 
                 InputPayload inputPayload = new InputPayload()
                 {
                     Tick = currentTick,
-                    Move = new Vector2(Input.GetAxis("Horizontal") + UIController.Instance.MoveJoyStick.Horizontal
+                    Move =!_isStartGame ? Vector2.zero : new Vector2(Input.GetAxis("Horizontal") + UIController.Instance.MoveJoyStick.Horizontal
                                     , Input.GetAxis("Vertical") + UIController.Instance.MoveJoyStick.Vertical)
                 };
 
@@ -141,6 +151,8 @@ namespace HS4.PlayerCore
         }
         private void HandleServerTick()
         {
+            if (!_isStartGame) return;
+
             if (!IsServer) return;
 
             var bufferIndex = -1;
@@ -178,6 +190,7 @@ namespace HS4.PlayerCore
 
         private StatePayload ProcessMove(InputPayload inputPayload)
         {
+            Debug.Log(_isStartGame);
             Move(inputPayload);
 
             return new StatePayload()
@@ -216,6 +229,7 @@ namespace HS4.PlayerCore
             }
             else {
                 _animation.Idle();
+                StopCoroutine(InitFootstep());
                 _footStep = false;
             }
                 
@@ -223,14 +237,15 @@ namespace HS4.PlayerCore
         }
 
 
-        IEnumerator InitFootstep() {
+        IEnumerator InitFootstep() 
+        {
             _footStep = true;
-            yield return new WaitForSeconds(3f);
+            yield return new WaitForSeconds(3.5f);
             GameObject footstep = Instantiate(_footstepOb, this.transform.position,Quaternion.identity);
             footstep.GetComponent<ParticleSystem>().Play();
             footstep.transform.position = new Vector3(transform.position.x, 0.5902482f, transform.position.z);
             footstep.transform.eulerAngles = new Vector3(90f,transform.eulerAngles.y,0);
-            Destroy(footstep,2f);
+            Destroy(footstep,0.5f);
             _footStep = false;
         }
 

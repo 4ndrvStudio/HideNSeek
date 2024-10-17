@@ -8,6 +8,7 @@ using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
 ﻿using System;
+using HS4;
 
 
 public struct RelayHostData
@@ -50,7 +51,7 @@ public class RelayManager : MonoBehaviour
 
     public async Task<RelayHostData> SetupHost(int maxNumberOfConnections)
     {
-
+        var character = await User.GetCharacterInUse();
         Allocation allocation = await Relay.Instance.CreateAllocationAsync(maxNumberOfConnections);
 
         RelayHostData relayHostData = new RelayHostData
@@ -75,7 +76,8 @@ public class RelayManager : MonoBehaviour
 
     public async Task<RelayJoinData> JoinRelay(string joinCode)
     {
-  
+        var character = await User.GetCharacterInUse();
+
         JoinAllocation allocation = await Relay.Instance.JoinAllocationAsync(joinCode);
       
         RelayJoinData relayJoinData = new RelayJoinData

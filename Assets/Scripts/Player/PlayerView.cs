@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Game;
+using HS4.Backend;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -14,27 +15,35 @@ namespace HS4.PlayerCore
         [SerializeField] private GameObject _hiderBody;
         [SerializeField] private GameObject _seekerBody;
         [SerializeField] private GameObject _caseOb;
+        [SerializeField] private GameObject _playerNameText;
+
+        [SerializeField] private List<GameObject> _bodyList = new();
 
         //Radar
         [SerializeField] private RadarView _radarView;
         [SerializeField] private CircleRadarView _circleRadarView;
 
+        private GameObject Targetbody;
+
         [SerializeField] private bool _isHider;
         //public NetworkVariable<bool> ObjectHide = new NetworkVariable<bool>(default,NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         public bool ObjectHide;
-        public void SetCharacterType(bool isHider)
+        public void SetCharacterType(bool isHider, string character_id)
         {
             _isHider = isHider;
-            SetBody(isHider);
+            SetBody(isHider,character_id);
         }
 
-        private void SetBody(bool isHider) {
-            _hiderBody.SetActive(isHider);
-            _seekerBody.SetActive(!isHider);
+        private void SetBody(bool isHider, string character_id) {
+            // _hiderBody.SetActive(isHider);
+            // _seekerBody.SetActive(!isHider);
             ObjectHide = false;
-            var targetBody = isHider ? _hiderBody : _seekerBody;
-            _skinMeshRender = targetBody.GetComponentInChildren<SkinnedMeshRenderer>();
-            _playerAnimation.SetAnimator(targetBody.GetComponent<Animator>());
+            char id = character_id[character_id.Length-1];
+            _bodyList.ForEach(x => x.gameObject.SetActive(false));
+            Targetbody = _bodyList[int.Parse(id.ToString()) -1];
+            Targetbody.SetActive(true);
+            _skinMeshRender = Targetbody.GetComponentInChildren<SkinnedMeshRenderer>();
+            _playerAnimation.SetAnimator(Targetbody.GetComponent<Animator>());
         }
 
         public void Reset() {
@@ -45,7 +54,8 @@ namespace HS4.PlayerCore
         }
 
         public void Hide() {
-            _skinMeshRender.enabled = false;
+            Targetbody.SetActive(false);
+            _playerNameText.SetActive(false);
             ObjectHide = true;
         } 
     
@@ -57,7 +67,8 @@ namespace HS4.PlayerCore
         public void SetIsKill(bool isKill) {
             _caseOb.SetActive(isKill);
             if(isKill) {
-                _skinMeshRender.enabled = true;
+                Targetbody.SetActive(true);
+                 _playerNameText.SetActive(true);
                 _playerAnimation.Die();
             } 
         }
